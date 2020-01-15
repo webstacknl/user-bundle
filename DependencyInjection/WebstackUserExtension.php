@@ -1,6 +1,6 @@
 <?php
 
-namespace Webstack\UserBundle;
+namespace Webstack\UserBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;

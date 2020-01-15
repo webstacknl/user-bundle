@@ -1,6 +1,6 @@
 <?php
 
-namespace Webstack\UserBundle;
+namespace Webstack\UserBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
