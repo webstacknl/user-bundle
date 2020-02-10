@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="webstack_user.user_manager" class="Webstack\UserBundle\Manager\UserManager" public="false">
+            <argument type="service" id="webstack_user.util.password_updater" />
+            <argument type="service" id="doctrine" />
+            <argument type="service" id="parameter_bag" />
+        </service>
+    </services>
+
+</container>

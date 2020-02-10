@@ -1,5 +1,12 @@
 {% extends "@!WebstackUser/base.html.twig" %}
+{% trans_default_domain 'WebstackUserBundle' %}
 
 {% block webstack_user_content %}
-{% include "@WebstackUser/Registration/register_content.html.twig" %}
+    {{ form_start(form, {'method': 'post', 'action': path('webstack_user_registration_register'), 'attr': {'class': 'webstack_user_registration_register'}}) }}
+    {{ form_widget(form) }}
+    <div>
+        <input type="submit" value="{{ 'registration.submit'|trans }}" />
+    </div>
+    {{ form_end(form) }}
+
 {% endblock webstack_user_content %}

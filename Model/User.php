@@ -2,89 +2,126 @@
 
 namespace Webstack\UserBundle\Model;
 
-use App\Entity\GroupInterface;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use phpDocumentor\Reflection\Types\Boolean;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Rollerworks\Component\PasswordStrength\Validator\Constraints\PasswordStrength;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class User
  */
-abstract class User implements UserInterface, EquatableInterface
+abstract class User implements UserInterface, EquatableInterface, GroupableInterface
 {
-    private const ROLE_DEFAULT = 'ROLE_USER';
-
     /**
-     * @var String
+     * @ORM\Column(type="string", length=32, nullable=true)
      */
     protected $firstname;
 
     /**
-     * @var String
+     * @ORM\Column(type="string", length=64, nullable=true)
      */
     protected $lastnamePrefix;
 
     /**
-     * @var String
+     * @ORM\Column(type="string", length=64, nullable=true)
      */
     protected $lastname;
 
     /**
-     * @var String
+     * @ORM\Column(type="string", length=64, unique=true)
      */
     protected $username;
 
     /**
-     * @var String
+     * @ORM\Column(type="string", length=64)
      */
     protected $email;
 
     /**
-     * @var Boolean
+     * @ORM\Column(type="boolean")
      */
     protected $enabled;
 
     /**
-     * @var String
+     * The salt to use for hashing
+     *
+     * @ORM\Column(type="string")
      */
     protected $salt;
 
     /**
-     * @var String
+     * Encrypted password. Must be persisted.
+     *
+     * @ORM\Column(type="string", nullable=true)
      */
     protected $password;
 
     /**
-     * @var String
+     * Plain password. Used for model validation. Must not be persisted.
+     *
+     * @var string
+     *
+     * @Assert\NotCompromisedPassword()
      */
     protected $plainPassword;
 
     /**
-     * @var DateTime
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $lastLogin;
 
     /**
-     * @var String
+     * Random string sent to the user email address in order to verify it
+     *
+     * @ORM\Column(type="string", nullable=true)
      */
     protected $confirmationToken;
 
     /**
-     * @var
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $passwordRequestedAt;
 
     /**
-     * @var array
+     * @ORM\Column(type="boolean")
+     */
+    protected $locked;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $expired;
+
+    /**
+     * @var DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $expiresAt;
+
+    /**
+     * @ORM\Column(type="array")
+     */
+    protected $roles = ['ROLE_USER'];
+
+    /**
+     * @var GroupInterface|Collection
      */
     protected $groups;
 
     /**
-     * @var array
+     * @ORM\Column(type="boolean")
      */
-    protected $roles;
+    protected $credentialsExpired;
+
+    /**
+     * @var DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $credentialsExpireAt;
 
     /**
      * User constructor.
@@ -93,7 +130,10 @@ abstract class User implements UserInterface, EquatableInterface
     {
         $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
         $this->enabled = false;
-        $this->roles = array();
+        $this->locked = false;
+        $this->expired = false;
+        $this->roles = ['ROLE_USER'];
+        $this->credentialsExpired = false;
     }
 
     /**
@@ -112,7 +152,7 @@ abstract class User implements UserInterface, EquatableInterface
      * @param string $firstname
      * @return User
      */
-    public function setFirstname($firstname): User
+    public function setFirstname(string $firstname): User
     {
         $this->firstname = $firstname;
 
@@ -120,24 +160,23 @@ abstract class User implements UserInterface, EquatableInterface
     }
 
     /**
-     * @return string|null
+     * Get lastname prefix
+     *
+     * @return null|string
      */
-    public function getLastNamePrefix(): ?string
+    public function getLastnamePrefix(): ?string
     {
         return $this->lastnamePrefix;
     }
 
     /**
-     * @param string $lastNamePrefix
-     *
-     * @return User
+     * @param mixed $lastnamePrefix
      */
-    public function setLastNamePrefix(?string $lastNamePrefix): User
+    public function setLastnamePrefix($lastnamePrefix): void
     {
-        $this->lastnamePrefix = $lastNamePrefix;
-
-        return $this;
+        $this->lastnamePrefix = $lastnamePrefix;
     }
+
 
     /**
      * Get lastname
@@ -165,15 +204,38 @@ abstract class User implements UserInterface, EquatableInterface
     /**
      * Get full name
      *
-     * @return string
+     * @return null|string
      */
-    public function getFullName(): string
+    public function getFullName(): ?string
     {
-        return implode(' ', array_filter([
-            $this->firstname,
-            $this->lastnamePrefix,
-            $this->lastname
-        ]));
+        if (!$this->firstname && !$this->lastname) {
+            return $this->username;
+        }
+
+        return $this->firstname . ' ' . $this->lastname;
+    }
+
+    /**
+     * Get username
+     *
+     * @return null|string
+     */
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    /**
+     * Set username
+     *
+     * @param string $username
+     * @return User
+     */
+    public function setUsername($username): User
+    {
+        $this->username = $username;
+
+        return $this;
     }
 
     /**
@@ -305,7 +367,7 @@ abstract class User implements UserInterface, EquatableInterface
     /**
      * Removes sensitive data from the user.
      */
-    public function eraseCredentials(): void
+    public function eraseCredentials()
     {
         $this->plainPassword = null;
     }
@@ -380,12 +442,150 @@ abstract class User implements UserInterface, EquatableInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Get locked
+     *
+     * @return bool
      */
-    public function addRole($role)
+    public function getLocked(): ?bool
+    {
+        return $this->locked;
+    }
+
+    /**
+     * Set locked
+     *
+     * @param bool $locked
+     * @return User
+     */
+    public function setLocked($locked): User
+    {
+        $this->locked = $locked;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAccountNonLocked(): ?bool
+    {
+        return !$this->locked;
+    }
+
+    /**
+     * Get expired
+     *
+     * @return bool
+     */
+    public function getExpired(): bool
+    {
+        return $this->expired;
+    }
+
+    /**
+     * Set expired
+     *
+     * @param bool $expired
+     * @return User
+     */
+    public function setExpired($expired): ?User
+    {
+        $this->expired = $expired;
+
+        return $this;
+    }
+
+    /**
+     * Get expires at
+     *
+     * @return DateTime
+     */
+    public function getExpiresAt(): ?DateTime
+    {
+        return $this->expiresAt;
+    }
+
+    /**
+     * Set expires at
+     *
+     * @param DateTime $expiresAt
+     * @return User
+     */
+    public function setExpiresAt(DateTime $expiresAt): User
+    {
+        $this->expiresAt = $expiresAt;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAccountNonExpired(): bool
+    {
+        if (true === $this->expired) {
+            return false;
+        }
+
+        if (null !== $this->expiresAt && $this->expiresAt->getTimestamp() < time()) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Get roles
+     *
+     * @param bool $withGroups
+     *
+     * @return array
+     */
+    public function getRoles($withGroups = true): ?array
+    {
+        $roles = $this->roles;
+
+        if ($withGroups) {
+            foreach ($this->getGroups() as $group) {
+                foreach ($group->getRoles() as $role) {
+                    $roles[] = $role;
+                }
+            }
+        }
+
+        //guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * Set roles
+     *
+     * @param array $roles
+     * @return User
+     */
+    public function setRoles(array $roles): User
+    {
+        foreach ($roles as $role) {
+            $this->addRole($role);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add role
+     *
+     * @param $role
+     * @return User
+     */
+    public function addRole($role): User
     {
         $role = strtoupper($role);
-        if ($role === static::ROLE_DEFAULT) {
+
+        if ($role === 'ROLE_USER' || $role === 'ROLE_ADMIN') {
             return $this;
         }
 
@@ -397,43 +597,118 @@ abstract class User implements UserInterface, EquatableInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Check is role is present
+     *
+     * @param $role
+     * @return bool
      */
-    public function getRoles()
+    public function hasRole($role): bool
     {
-        $roles = $this->roles;
+        return in_array($role, $this->roles, true);
+    }
 
-        foreach ($this->getGroups() as $group) {
-            $roles = array_merge($roles, $group->getRoles());
+    /**
+     * @param string $role
+     */
+    public function removeRole(string $role)
+    {
+        $key = array_search($role, $this->roles, true);
+
+        if ($key !== false) {
+            unset($this->roles[$key]);
         }
 
-        $roles[] = static::ROLE_DEFAULT;
-
-        return array_unique($roles);
+        // Ensure at least ROLE_ADMIN is set
+        if (empty($this->roles)) {
+            $this->roles[] = 'ROLE_ADMIN';
+        }
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
-    public function hasRole($role)
+    final public function isSuperAdmin(): bool
     {
-        return in_array(strtoupper($role), $this->getRoles(), true);
+        return $this->hasRole('ROLE_SUPER_ADMIN');
     }
 
     /**
-     * {@inheritdoc}
+     * Set credentials expired
+     *
+     * @param bool $credentialsExpired
+     * @return User
      */
-    public function getGroups()
+    public function setCredentialsExpired($credentialsExpired): User
+    {
+        $this->credentialsExpired = $credentialsExpired;
+
+        return $this;
+    }
+
+    /**
+     * Get credentials expired
+     *
+     * @return bool
+     */
+    public function getCredentialsExpired(): ?bool
+    {
+        return $this->credentialsExpired;
+    }
+
+    /**
+     * Set credentials expired at
+     *
+     * @param DateTime $datetime
+     * @return User
+     */
+    public function setCredentialsExpireAt(DateTime $datetime): User
+    {
+        $this->credentialsExpireAt = $datetime;
+
+        return $this;
+    }
+
+    /**
+     * Get credentials expired at
+     *
+     * @return DateTime
+     */
+    public function getCredentialsExpireAt(): ?DateTime
+    {
+        return $this->credentialsExpireAt;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCredentialsNonExpired(): bool
+    {
+        if (true === $this->credentialsExpired) {
+            return false;
+        }
+
+        if (null !== $this->credentialsExpireAt && $this->credentialsExpireAt->getTimestamp() < time()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return ArrayCollection|GroupInterface[]
+     */
+    public function getGroups(): Collection
     {
         return $this->groups ?: $this->groups = new ArrayCollection();
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
-    public function getGroupNames()
+    public function getGroupNames(): array
     {
         $names = array();
+
         foreach ($this->getGroups() as $group) {
             $names[] = $group->getName();
         }
@@ -442,34 +717,35 @@ abstract class User implements UserInterface, EquatableInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     * @return bool
      */
-    public function hasGroup($name)
+    public function hasGroup($name): bool
     {
-        return in_array($name, $this->getGroupNames());
+        return in_array($name, $this->getGroupNames(), true);
     }
 
     /**
-     * {@inheritdoc}
+     * @param GroupInterface $group
+     * @return User|GroupableInterface
      */
     public function addGroup(GroupInterface $group)
     {
         if (!$this->getGroups()->contains($group)) {
             $this->getGroups()->add($group);
         }
-
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @param GroupInterface $group
+     * @return $this|GroupableInterface
      */
     public function removeGroup(GroupInterface $group)
     {
         if ($this->getGroups()->contains($group)) {
             $this->getGroups()->removeElement($group);
         }
-
         return $this;
     }
 

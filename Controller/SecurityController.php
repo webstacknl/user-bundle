@@ -2,14 +2,12 @@
 
 namespace Webstack\UserBundle\Controller;
 
+use Exception;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 /**
  * Class SecurityController
@@ -17,58 +15,34 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 class SecurityController extends AbstractController
 {
     /**
-     * @var CsrfTokenManagerInterface|null
+     * @var AuthenticationUtils
      */
-    private $tokenManager;
+    private $authenticationUtils;
 
     /**
      * SecurityController constructor.
-     * @param CsrfTokenManagerInterface|null $tokenManager
+     * @param AuthenticationUtils $authenticationUtils
      */
-    public function __construct(CsrfTokenManagerInterface $tokenManager = null)
+    public function __construct(AuthenticationUtils $authenticationUtils)
     {
-        $this->tokenManager = $tokenManager;
+        $this->authenticationUtils = $authenticationUtils;
     }
 
     /**
-     * @param Request $request
-     *
      * @return Response
      */
-    public function login(Request $request): Response
+    public function login(): Response
     {
-        /** @var $session Session */
-        $session = $request->getSession();
-
-        $authErrorKey = Security::AUTHENTICATION_ERROR;
-        $lastUsernameKey = Security::LAST_USERNAME;
-
-        // get the error if any (works with forward and redirect -- see below)
-        if ($request->attributes->has($authErrorKey)) {
-            $error = $request->attributes->get($authErrorKey);
-        } elseif (null !== $session && $session->has($authErrorKey)) {
-            $error = $session->get($authErrorKey);
-            $session->remove($authErrorKey);
-        } else {
-            $error = null;
-        }
-
-        if (!$error instanceof AuthenticationException) {
-            $error = null; // The value does not come from the security component.
-        }
+        // get the login error if there is one
+        $error = $this->authenticationUtils->getLastAuthenticationError();
 
         // last username entered by the user
-        $lastUsername = (null === $session) ? '' : $session->get($lastUsernameKey);
+        $lastUsername = $this->authenticationUtils->getLastUsername();
 
-        $csrfToken = $this->tokenManager
-            ? $this->tokenManager->getToken('authenticate')->getValue()
-            : null;
-
-        return $this->renderLogin(array(
+        return $this->render('@WebstackUser/Security/login.html.twig', [
             'last_username' => $lastUsername,
-            'error' => $error,
-            'csrf_token' => $csrfToken,
-        ));
+            'error' => $error
+        ]);
     }
 
     /**
@@ -80,23 +54,11 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @return void
+     * @Route("/logout", name="app_logout")
+     * @throws Exception
      */
-    public function logout(): void
+    public function logout()
     {
-        throw new RuntimeException('You must activate the logout in your security firewall configuration.');
-    }
-
-    /**
-     * Renders the login template with the given parameters. Overwrite this function in
-     * an extended controller to provide additional data for the login template.
-     *
-     * @param array $data
-     *
-     * @return Response
-     */
-    protected function renderLogin(array $data): Response
-    {
-        return $this->render('@WebstackUser/Security/login.html.twig', $data);
+        throw new Exception('This method can be blank - it will be intercepted by the logout key on your firewall');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Webstack\UserBundle;
 
+use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Webstack\UserBundle\DependencyInjection\Compiler\ValidationPass;
@@ -21,20 +22,20 @@ class WebstackUserBundle extends Bundle
 
 //        $container->addCompilerPass(new ValidationPass());
 
-//        $this->addRegisterMappingsPass($container);
+        $this->addRegisterMappingsPass($container);
     }
 
-//    /**
-//     * @param ContainerBuilder $container
-//     */
-//    private function addRegisterMappingsPass(ContainerBuilder $container)
-//    {
-//        $mappings = array(
-//            realpath(__DIR__.'/Resources/config/doctrine-mapping') => 'FOS\UserBundle\Model',
-//        );
-//
-//        if (class_exists(DoctrineOrmMappingsPass::class)) {
-//            $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, array('fos_user.model_manager_name'), 'fos_user.backend_type_orm'));
-//        }
-//    }
+    /**
+     * @param ContainerBuilder $container
+     */
+    private function addRegisterMappingsPass(ContainerBuilder $container)
+    {
+        $mappings = array(
+            realpath(__DIR__.'/Resources/config/doctrine-mapping') => 'Webstack\UserBundle\Model',
+        );
+
+        if (class_exists(DoctrineOrmMappingsPass::class)) {
+            $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings, array('webstack_user.model_manager_name'), 'webstack_user.backend_type_orm'));
+        }
+    }
 }

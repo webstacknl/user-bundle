@@ -9,6 +9,9 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class RegistrationFormType
+ */
 class RegistrationFormType extends AbstractType
 {
     /**
@@ -30,19 +33,19 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email', EmailType::class, array('label' => 'form.email', 'translation_domain' => 'FOSUserBundle'))
-            ->add('username', null, array('label' => 'form.username', 'translation_domain' => 'FOSUserBundle'))
+            ->add('email', EmailType::class, array('label' => 'form.email', 'translation_domain' => 'WebstackUserBundle'))
+            ->add('username', null, array('label' => 'form.username', 'translation_domain' => 'WebstackUserBundle'))
             ->add('plainPassword', RepeatedType::class, array(
                 'type' => PasswordType::class,
                 'options' => array(
-                    'translation_domain' => 'FOSUserBundle',
+                    'translation_domain' => 'WebstackUserBundle',
                     'attr' => array(
                         'autocomplete' => 'new-password',
                     ),
                 ),
                 'first_options' => array('label' => 'form.password'),
                 'second_options' => array('label' => 'form.password_confirmation'),
-                'invalid_message' => 'fos_user.password.mismatch',
+                'invalid_message' => 'webstack_user.password.mismatch',
             ))
         ;
     }
@@ -61,7 +64,7 @@ class RegistrationFormType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->getBlockPrefix();
     }
@@ -69,7 +72,7 @@ class RegistrationFormType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'webstack_user_registration';
     }

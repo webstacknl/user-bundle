@@ -1,6 +1,6 @@
 <?php
 
-namespace FOS\UserBundle\Controller;
+namespace Webstack\UserBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Webstack\UserBundle\Event\FormEvent;
 use Webstack\UserBundle\Form\Factory\FactoryInterface;
-use Webstack\UserBundle\Model\UserManagerInterface;
+use Webstack\UserBundle\Manager\UserManager;
 
 /**
  * Class RegistrationController
@@ -25,7 +25,7 @@ class RegistrationController extends AbstractController
     private $formFactory;
 
     /**
-     * @var UserManagerInterface
+     * @var UserManager
      */
     private $userManager;
 
@@ -37,10 +37,10 @@ class RegistrationController extends AbstractController
     /**
      * RegistrationController constructor.
      * @param FactoryInterface $formFactory
-     * @param UserManagerInterface $userManager
+     * @param UserManager $userManager
      * @param TokenStorageInterface $tokenStorage
      */
-    public function __construct(FactoryInterface $formFactory, UserManagerInterface $userManager, TokenStorageInterface $tokenStorage)
+    public function __construct(FactoryInterface $formFactory, UserManager $userManager, TokenStorageInterface $tokenStorage)
     {
         $this->formFactory = $formFactory;
         $this->userManager = $userManager;
@@ -55,8 +55,6 @@ class RegistrationController extends AbstractController
     public function register(Request $request): Response
     {
         $user = $this->userManager->createUser();
-        $user->setEnabled(true);
-
         $form = $this->formFactory->createForm();
         $form->setData($user);
 
@@ -65,8 +63,8 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 $this->userManager->updateUser($user);
-                $url = $this->generateUrl('webstack_user_registration_confirmed');
-                return new RedirectResponse($url);
+
+                return $this->redirectToRoute('webstack_user_registration_confirmed');
             }
 
             $event = new FormEvent($form, $request);
@@ -76,9 +74,9 @@ class RegistrationController extends AbstractController
             }
         }
 
-        return $this->render('@WebstackUser/Registration/register.html.twig', array(
+        return $this->render('@WebstackUser/Registration/register.html.twig', [
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -93,10 +91,10 @@ class RegistrationController extends AbstractController
             throw new AccessDeniedException('This user does not have access to this section.');
         }
 
-        return $this->render('@WebstackUser/Registration/confirmed.html.twig', array(
+        return $this->render('@WebstackUser/Registration/confirmed.html.twig',[
             'user' => $user,
             'targetUrl' => $this->getTargetUrlFromSession($request->getSession()),
-        ));
+        ]);
     }
 
     /**

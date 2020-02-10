@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace Webstack\UserBundle\Model;
 
 /**
  * Interface GroupInterface

@@ -5,7 +5,6 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-
         <service id="webstack_user.registration.form.factory" class="Webstack\UserBundle\Form\Factory\FormFactory">
             <argument type="service" id="form.factory" />
             <argument>%webstack_user.registration.form.name%</argument>
@@ -18,14 +17,10 @@
             <argument>%webstack_user.model.user.class%</argument>
         </service>
 
-        <service id="webstack_user.registration.controller" class="FOS\UserBundle\Controller\RegistrationController" public="true">
-            <argument type="service" id="event_dispatcher" />
+        <service id="webstack_user.registration.controller" class="Webstack\UserBundle\Controller\RegistrationController" public="true">
             <argument type="service" id="webstack_user.registration.form.factory" />
             <argument type="service" id="webstack_user.user_manager" />
             <argument type="service" id="security.token_storage" />
-            <call method="setContainer">
-                <argument type="service" id="service_container" />
-            </call>
         </service>
     </services>
 

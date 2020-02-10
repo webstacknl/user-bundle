@@ -4,11 +4,11 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
         http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
 
-    <class name="FOS\UserBundle\Model\User">
+    <class name="Webstack\UserBundle\Model\User">
 
         <property name="username">
             <constraint name="NotBlank">
-                <option name="message">fos_user.username.blank</option>
+                <option name="message">webstack_user.username.blank</option>
                 <option name="groups">
                     <value>Registration</value>
                     <value>Profile</value>
@@ -16,9 +16,20 @@
             </constraint>
             <constraint name="Length">
                 <option name="min">2</option>
-                <option name="minMessage">fos_user.username.short</option>
+                <option name="minMessage">webstack_user.username.short</option>
                 <option name="max">180</option>
-                <option name="maxMessage">fos_user.username.long</option>
+                <option name="maxMessage">webstack_user.username.long</option>
+                <option name="groups">
+                    <value>Registration</value>
+                    <value>Profile</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="lastnamePrefix">
+            <constraint name="Length">
+                <option name="max">180</option>
+                <option name="maxMessage">webstack_user.username.long</option>
                 <option name="groups">
                     <value>Registration</value>
                     <value>Profile</value>
@@ -28,7 +39,7 @@
 
         <property name="email">
             <constraint name="NotBlank">
-                <option name="message">fos_user.email.blank</option>
+                <option name="message">webstack_user.email.blank</option>
                 <option name="groups">
                     <value>Registration</value>
                     <value>Profile</value>
@@ -36,16 +47,16 @@
             </constraint>
             <constraint name="Length">
                 <option name="min">2</option>
-                <option name="minMessage">fos_user.email.short</option>
+                <option name="minMessage">webstack_user.email.short</option>
                 <option name="max">180</option>
-                <option name="maxMessage">fos_user.email.long</option>
+                <option name="maxMessage">webstack_user.email.long</option>
                 <option name="groups">
                     <value>Registration</value>
                     <value>Profile</value>
                 </option>
             </constraint>
             <constraint name="Email">
-                <option name="message">fos_user.email.invalid</option>
+                <option name="message">webstack_user.email.invalid</option>
                 <option name="groups">
                     <value>Registration</value>
                     <value>Profile</value>
@@ -55,7 +66,7 @@
 
         <property name="plainPassword">
             <constraint name="NotBlank">
-                <option name="message">fos_user.password.blank</option>
+                <option name="message">webstack_user.password.blank</option>
                 <option name="groups">
                     <value>Registration</value>
                     <value>ResetPassword</value>
@@ -65,7 +76,7 @@
             <constraint name="Length">
                 <option name="min">2</option>
                 <option name="max">4096</option>
-                <option name="minMessage">fos_user.password.short</option>
+                <option name="minMessage">webstack_user.password.short</option>
                 <option name="groups">
                     <value>Registration</value>
                     <value>Profile</value>
@@ -79,14 +90,14 @@
     <class name="FOS\UserBundle\Model\Group">
         <property name="name">
             <constraint name="NotBlank">
-                <option name="message">fos_user.group.blank</option>
+                <option name="message">webstack_user.group.blank</option>
                 <option name="groups">Registration</option>
             </constraint>
             <constraint name="Length">
                 <option name="min">2</option>
-                <option name="minMessage">fos_user.group.short</option>
+                <option name="minMessage">webstack_user.group.short</option>
                 <option name="max">180</option>
-                <option name="maxMessage">fos_user.group.long</option>
+                <option name="maxMessage">webstack_user.group.long</option>
                 <option name="groups">Registration</option>
             </constraint>
         </property>
