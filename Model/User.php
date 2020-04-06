@@ -6,38 +6,50 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Rollerworks\Component\PasswordStrength\Validator\Constraints\PasswordStrength;
+use Exception;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface as EmailTwoFactorInterface;
+use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface as GoogleTwoFactorInterface;
+use Scheb\TwoFactorBundle\Model\PreferredProviderInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Webstack\AdminBundle\Traits\PrimaryUuidTrait;
+use Webstack\AdminBundle\Traits\User\EmailTwoFactorTrait;
+use Webstack\AdminBundle\Traits\User\GoogleTwoFactorTrait;
 
 /**
  * Class User
  */
-abstract class User implements UserInterface, EquatableInterface, GroupableInterface
+abstract class User implements UserInterface, EquatableInterface, GroupableInterface, PreferredProviderInterface, GoogleTwoFactorInterface, EmailTwoFactorInterface
 {
-    /**
-     * @ORM\Column(type="string", length=32, nullable=true)
-     */
-    protected $firstname;
+    use PrimaryUuidTrait;
+    use TimestampableEntity;
+    use GoogleTwoFactorTrait;
+    use EmailTwoFactorTrait;
 
     /**
-     * @ORM\Column(type="string", length=64, nullable=true)
+     * @ORM\Column(type="string", length=40, nullable=true)
      */
-    protected $lastnamePrefix;
+    protected $firstName;
 
     /**
-     * @ORM\Column(type="string", length=64, nullable=true)
+     * @ORM\Column(type="string", length=20, nullable=true)
      */
-    protected $lastname;
+    protected $lastNamePrefix;
 
     /**
-     * @ORM\Column(type="string", length=64, unique=true)
+     * @ORM\Column(type="string", length=40, nullable=true)
+     */
+    protected $lastName;
+
+    /**
+     * @ORM\Column(type="string", unique=true)
      */
     protected $username;
 
     /**
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string")
      */
     protected $email;
 
@@ -137,68 +149,62 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
     }
 
     /**
-     * Get firstname
+     * Get firstName
      *
      * @return null|string
      */
-    public function getFirstname(): ?string
+    public function getFirstName(): ?string
     {
-        return $this->firstname;
+        return $this->firstName;
     }
 
     /**
-     * Set firstname
+     * Set firstName
      *
-     * @param string $firstname
-     * @return User
+     * @param string $firstName
      */
-    public function setFirstname(string $firstname): User
+    public function setFirstName(string $firstName): void
     {
-        $this->firstname = $firstname;
-
-        return $this;
+        $this->firstName = $firstName;
     }
 
     /**
-     * Get lastname prefix
+     * Get lastName prefix
      *
      * @return null|string
      */
-    public function getLastnamePrefix(): ?string
+    public function getLastNamePrefix(): ?string
     {
-        return $this->lastnamePrefix;
+        return $this->lastNamePrefix;
     }
 
     /**
-     * @param mixed $lastnamePrefix
+     * @param mixed $lastNamePrefix
      */
-    public function setLastnamePrefix($lastnamePrefix): void
+    public function setLastNamePrefix($lastNamePrefix): void
     {
-        $this->lastnamePrefix = $lastnamePrefix;
+        $this->lastNamePrefix = $lastNamePrefix;
     }
 
 
     /**
-     * Get lastname
+     * Get lastName
      *
      * @return null|string
      */
-    public function getLastname(): ?string
+    public function getLastName(): ?string
     {
-        return $this->lastname;
+        return $this->lastName;
     }
 
     /**
-     * Set lastname
+     * Set lastName
      *
-     * @param string $lastname
-     * @return User
+     * @param string $lastName
      */
-    public function setLastname($lastname): User
+    public function setLastName($lastName): void
     {
-        $this->lastname = $lastname;
-
-        return $this;
+        $this->lastName = $lastName;
     }
 
     /**
@@ -208,11 +214,11 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      */
     public function getFullName(): ?string
     {
-        if (!$this->firstname && !$this->lastname) {
+        if (!$this->firstName && !$this->lastName) {
             return $this->username;
         }
 
-        return $this->firstname . ' ' . $this->lastname;
+        return implode(' ', array_filter([$this->firstName, $this->lastNamePrefix, $this->lastName]));
     }
 
     /**
@@ -229,13 +235,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set username
      *
      * @param string $username
-     * @return User
      */
-    public function setUsername($username): User
+    public function setUsername($username): void
     {
         $this->username = $username;
-
-        return $this;
     }
 
     /**
@@ -253,13 +256,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set email
      *
      * @param string $email
-     * @return User
      */
-    public function setEmail($email): User
+    public function setEmail($email): void
     {
         $this->email = $email;
-
-        return $this;
     }
 
     /**
@@ -276,13 +276,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set enabled
      *
      * @param bool $enabled
-     * @return User
      */
-    public function setEnabled($enabled): User
+    public function setEnabled($enabled): void
     {
         $this->enabled = $enabled;
-
-        return $this;
     }
 
     /**
@@ -307,13 +304,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set salt
      *
      * @param string $salt
-     * @return User
      */
-    public function setSalt($salt): User
+    public function setSalt($salt): void
     {
         $this->salt = $salt;
-
-        return $this;
     }
 
     /**
@@ -330,13 +324,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set password (bcrypt)
      *
      * @param string $password
-     * @return User
      */
-    public function setPassword($password): User
+    public function setPassword($password): void
     {
         $this->password = $password;
-
-        return $this;
     }
 
     /**
@@ -350,18 +341,21 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
     }
 
     /**
-     * Set plain password
-     *
      * @param string $plainPassword
-     * @return User
      */
-    public function setPlainPassword($plainPassword): User
+    public function setPlainPassword(string $plainPassword): void
     {
         $this->plainPassword = $plainPassword;
 
-        return $this->setPassword(password_hash($plainPassword, PASSWORD_BCRYPT, [
-            'costs' => 12
-        ]));
+        // forces the object to look "dirty" to Doctrine. Avoids
+        // Doctrine *not* saving this entity, if only plainPassword changes
+        $this->password = null;
+
+        try {
+            $this->updatedAt = new DateTime();
+        } catch (Exception $e) {
+            //
+        }
     }
 
     /**
@@ -386,13 +380,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set last login
      *
      * @param DateTime|null $time
-     * @return User
      */
-    public function setLastLogin(?DateTime $time): User
+    public function setLastLogin(?DateTime $time): void
     {
         $this->lastLogin = $time;
-
-        return $this;
     }
 
     /**
@@ -409,13 +400,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set confirmation token
      *
      * @param string $confirmationToken
-     * @return User
      */
-    public function setConfirmationToken($confirmationToken): User
+    public function setConfirmationToken($confirmationToken): void
     {
         $this->confirmationToken = $confirmationToken;
-
-        return $this;
     }
 
     /**
@@ -432,13 +420,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set password request at
      *
      * @param DateTime|null $date
-     * @return User
      */
-    public function setPasswordRequestedAt(DateTime $date = null): User
+    public function setPasswordRequestedAt(DateTime $date = null): void
     {
         $this->passwordRequestedAt = $date;
-
-        return $this;
     }
 
     /**
@@ -455,13 +440,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set locked
      *
      * @param bool $locked
-     * @return User
      */
-    public function setLocked($locked): User
+    public function setLocked($locked): void
     {
         $this->locked = $locked;
-
-        return $this;
     }
 
     /**
@@ -486,13 +468,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set expired
      *
      * @param bool $expired
-     * @return User
      */
-    public function setExpired($expired): ?User
+    public function setExpired($expired): void
     {
         $this->expired = $expired;
-
-        return $this;
     }
 
     /**
@@ -509,13 +488,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set expires at
      *
      * @param DateTime $expiresAt
-     * @return User
      */
-    public function setExpiresAt(DateTime $expiresAt): User
+    public function setExpiresAt(DateTime $expiresAt): void
     {
         $this->expiresAt = $expiresAt;
-
-        return $this;
     }
 
     /**
@@ -564,36 +540,30 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set roles
      *
      * @param array $roles
-     * @return User
      */
-    public function setRoles(array $roles): User
+    public function setRoles(array $roles): void
     {
         foreach ($roles as $role) {
             $this->addRole($role);
         }
-
-        return $this;
     }
 
     /**
      * Add role
      *
      * @param $role
-     * @return User
      */
-    public function addRole($role): User
+    public function addRole($role): void
     {
         $role = strtoupper($role);
 
-        if ($role === 'ROLE_USER' || $role === 'ROLE_ADMIN') {
-            return $this;
+        if ($role === 'ROLE_USER') {
+            return;
         }
 
         if (!in_array($role, $this->roles, true)) {
             $this->roles[] = $role;
         }
-
-        return $this;
     }
 
     /**
@@ -636,13 +606,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set credentials expired
      *
      * @param bool $credentialsExpired
-     * @return User
      */
-    public function setCredentialsExpired($credentialsExpired): User
+    public function setCredentialsExpired($credentialsExpired): void
     {
         $this->credentialsExpired = $credentialsExpired;
-
-        return $this;
     }
 
     /**
@@ -659,13 +626,10 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Set credentials expired at
      *
      * @param DateTime $datetime
-     * @return User
      */
-    public function setCredentialsExpireAt(DateTime $datetime): User
+    public function setCredentialsExpireAt(DateTime $datetime): void
     {
         $this->credentialsExpireAt = $datetime;
-
-        return $this;
     }
 
     /**
@@ -727,26 +691,22 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
 
     /**
      * @param GroupInterface $group
-     * @return User|GroupableInterface
      */
     public function addGroup(GroupInterface $group)
     {
         if (!$this->getGroups()->contains($group)) {
             $this->getGroups()->add($group);
         }
-        return $this;
     }
 
     /**
      * @param GroupInterface $group
-     * @return $this|GroupableInterface
      */
     public function removeGroup(GroupInterface $group)
     {
         if ($this->getGroups()->contains($group)) {
             $this->getGroups()->removeElement($group);
         }
-        return $this;
     }
 
     /**
@@ -772,5 +732,13 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
         }
 
         return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPreferredTwoFactorProvider(): string
+    {
+        return 'google';
     }
 }

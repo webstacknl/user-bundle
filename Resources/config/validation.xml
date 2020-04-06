@@ -14,28 +14,28 @@
                     <value>Profile</value>
                 </option>
             </constraint>
-            <constraint name="Length">
-                <option name="min">2</option>
-                <option name="minMessage">webstack_user.username.short</option>
-                <option name="max">180</option>
-                <option name="maxMessage">webstack_user.username.long</option>
-                <option name="groups">
-                    <value>Registration</value>
-                    <value>Profile</value>
-                </option>
-            </constraint>
+<!--            <constraint name="Length">-->
+<!--                <option name="min">2</option>-->
+<!--                <option name="minMessage">webstack_user.username.short</option>-->
+<!--                <option name="max">180</option>-->
+<!--                <option name="maxMessage">webstack_user.username.long</option>-->
+<!--                <option name="groups">-->
+<!--                    <value>Registration</value>-->
+<!--                    <value>Profile</value>-->
+<!--                </option>-->
+<!--            </constraint>-->
         </property>
 
-        <property name="lastnamePrefix">
-            <constraint name="Length">
-                <option name="max">180</option>
-                <option name="maxMessage">webstack_user.username.long</option>
-                <option name="groups">
-                    <value>Registration</value>
-                    <value>Profile</value>
-                </option>
-            </constraint>
-        </property>
+<!--        <property name="lastNamePrefix">-->
+<!--            <constraint name="Length">-->
+<!--                <option name="max">180</option>-->
+<!--                <option name="maxMessage">webstack_user.username.long</option>-->
+<!--                <option name="groups">-->
+<!--                    <value>Registration</value>-->
+<!--                    <value>Profile</value>-->
+<!--                </option>-->
+<!--            </constraint>-->
+<!--        </property>-->
 
         <property name="email">
             <constraint name="NotBlank">

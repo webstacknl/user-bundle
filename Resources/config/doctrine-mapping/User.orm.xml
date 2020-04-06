@@ -3,45 +3,25 @@
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                   http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-
+wefasf
     <mapped-superclass name="Webstack\UserBundle\Model\User">
-
-        <field name="firstname" column="firstname" type="string" length="180" />
-
-        <field name="lastnamePrefix" column="lastnamePrefix" type="string" length="180" nullable="true" />
-
-        <field name="lastname" column="lastname" type="string" length="180" />
-
+        <field name="firstName" column="firstName" type="string" length="180" />
+        <field name="lastNamePrefix" column="lastNamePrefix" type="string" length="180" nullable="true" />
+        <field name="lastName" column="lastName" type="string" length="180" />
         <field name="username" column="username" type="string" length="180" />
-
         <field name="email" column="email" type="string" length="180" />
-
         <field name="enabled" column="enabled" type="boolean" />
-
         <field name="salt" column="salt" type="string" nullable="true" />
-
         <field name="password" column="password" type="string" />
-
         <field name="lastLogin" column="last_login" type="datetime" nullable="true" />
-
         <field name="confirmationToken" column="confirmation_token" type="string" length="180" unique="true" nullable="true" />
-
         <field name="passwordRequestedAt" column="password_requested_at" type="datetime" nullable="true" />
-
         <field name="locked" column="locked" type="boolean" />
-
         <field name="expired" column="expired" type="boolean" />
-
         <field name="expiresAt" column="expires_at" type="datetime" nullable="true" />
-
         <field name="roles" column="roles" type="array" />
-
         <field name="groups" column="groups" type="collection" />
-
         <field name="credentialsExpired" column="credentials_expired" type="boolean" />
-
         <field name="credentialsExpireAt" column="credentials_expire_at" type="datetime" nullable="true" />
-
     </mapped-superclass>
-
 </doctrine-mapping>

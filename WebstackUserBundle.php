@@ -9,7 +9,6 @@ use Webstack\UserBundle\DependencyInjection\Compiler\ValidationPass;
 
 /**
  * Class WebstackUserBundle
- * @author Webstack B.V. <info@webstack.nl>
  */
 class WebstackUserBundle extends Bundle
 {
@@ -28,7 +27,7 @@ class WebstackUserBundle extends Bundle
     /**
      * @param ContainerBuilder $container
      */
-    private function addRegisterMappingsPass(ContainerBuilder $container)
+    private function addRegisterMappingsPass(ContainerBuilder $container): void
     {
         $mappings = array(
             realpath(__DIR__.'/Resources/config/doctrine-mapping') => 'Webstack\UserBundle\Model',
