@@ -1,4 +1,4 @@
-<form class="form" action="{{ path("webstack_user_twofactorauthentication_index") }}" method="post">
+<form class="form" action="{{ path("webstack_user_two_factor_authentication_index") }}" method="post">
     <input type="hidden" name="secret" value="{{ secret }}"/>
     <label for="code" class="block text-sm font-medium leading-5 text-gray-700">
         Authenticatie code
@@ -8,7 +8,7 @@
                name="code" placeholder="Vul hier uw code in&hellip;"/>
         <p class="pl-4 submit">
             <input type="submit"
-                   class="btn btn-primary nline-flex items-center px-10 py-2 border border-transparent text-base leading-6 font-medium rounded-md text-white focus:outline-none transition ease-in-out duration-150"
+                   class="btn btn-primary inline-flex items-center px-10 py-2 border border-transparent text-base leading-6 font-medium rounded-md text-white focus:outline-none transition ease-in-out duration-150"
                    value="Activeer"/>
         </p>
     </div>

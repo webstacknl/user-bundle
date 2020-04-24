@@ -10,5 +10,5 @@
             resource="@WebstackUserBundle/Resources/config/routing/registration.xml"
             prefix="/register"/>
     <import
-            resource="@WebstackUserBundle/Resources/config/routing/twofactorauthentication.xml"/>
+            resource="@WebstackUserBundle/Resources/config/routing/two_factor_authentication.xml"/>
 </routes>
