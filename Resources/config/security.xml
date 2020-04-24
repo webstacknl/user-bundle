@@ -36,6 +36,10 @@
         <service id="webstack_user.security.controller" class="Webstack\UserBundle\Controller\SecurityController" public="true">
             <argument type="service" id="security.authentication_utils" on-invalid="null" />
         </service>
+
+        <service id="webstack_user.two_factor_authentication.controller" class="Webstack\UserBundle\Controller\TwoFactorAuthenticationController" public="true">
+            <tag name="controller.service_arguments"/>
+        </service>
     </services>
 
 </container>

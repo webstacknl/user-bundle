@@ -5,8 +5,10 @@
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
     <import
-        resource="@WebstackUserBundle/Resources/config/routing/security.xml" />
+            resource="@WebstackUserBundle/Resources/config/routing/security.xml"/>
     <import
-        resource="@WebstackUserBundle/Resources/config/routing/registration.xml"
-        prefix="/register" />
+            resource="@WebstackUserBundle/Resources/config/routing/registration.xml"
+            prefix="/register"/>
+    <import
+            resource="@WebstackUserBundle/Resources/config/routing/two_factor_authentication.xml"/>
 </routes>

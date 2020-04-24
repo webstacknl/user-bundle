@@ -1,0 +1,48 @@
+{% trans_default_domain 'WebstackUserBundle' %}
+
+{% set hide_navigation_second = true %}
+{% set hide_page_header = true %}
+{% set page_class = 'login-container' %}
+
+{% block webstack_user_content %}
+    <div>
+        <p>
+            <strong>Scan de streepjescode</strong> <br/>
+            Scan onderstaande afbeelding met de two-factor authentication app op uw telefoon.<br/>
+            Als u de barcode niet kunt gebruiken, vul dan <a href="javascript:alert('{{ secret }}');"
+                                                             style="text-decoration: underline;">deze code</a> in.
+        </p>
+
+        <img src="{{ qr_code_data_uri(qrContent, { writer: 'svg', size: 200 }) }}"/>
+
+        <hr/>
+
+        <p>
+            <strong>Verifieer uw code</strong> <br/>
+            Om te controleren of uw account goed is ingesteld, dient u hieronder uw authenticatie code in te vullen.
+            <br/>
+            Pas als de code is gevalideerd, wordt de 2-staps authenticatie geactiveerd op uw account.
+        </p>
+
+        {% include '@WebstackUser/two_factor_authentication/form.html.twig' %}
+    </div>
+    <div>
+        <p>
+            <strong>Android</strong> <br/>
+            <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"
+               target="_blank">Google Authenticator</a> <br/>
+            <a href="https://play.google.com/store/apps/details?id=com.azure.authenticator&hl=nl" target="_blank">Microsoft
+                Authenticator</a> <br/>
+        </p>
+
+        <p>
+            <strong>iOS</strong> <br/>
+            <a href="https://itunes.apple.com/app/google-authenticator/id388497605" target="_blank">Google
+                Authenticator</a> <br/>
+            <a href="https://apps.apple.com/nl/app/microsoft-authenticator/id983156458" target="_blank">Microsoft
+                Authenticator</a> <br/>
+        </p>
+
+    </div>
+
+{% endblock webstack_user_content %}
