@@ -1,0 +1,39 @@
+{% block title %}{% endblock %}
+
+{% set hide_navigation_second = true %}
+{% set hide_page_header = true %}
+{% set page_class = 'login-container' %}
+
+{% block body %}
+    <div>
+
+        {% set formErrors = form.vars.errors.form.getErrors(true) %}
+
+        <div id="form_errors"
+             style="display: {% if formErrors is not empty %}block{% else %}none{% endif %};">
+            <h6 class="no-margin text-semibold">Er zijn een of meerdere fouten opgetreden:</h6>
+            <ul>
+                {% if formErrors is not empty %}
+                    {% for error in formErrors %}
+                        <li>{{ error.message }}</li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </div>
+
+        {% include '@WebstackUser/change_password/form.html.twig' %}
+    </div>
+    <div>
+        Het nieuwe wachtwoord dient te bestaan uit
+        <ul>
+            <li>Kleine letters</li>
+            <li>Hoofdletters</li>
+            <li>Cijfers</li>
+            <li>Speciale tekens</li>
+            <li>Minimaal 13 tekens lang</li>
+        </ul>
+
+        <p>Er wordt tevens gecontroleerd of het wachtwoord geen deel uitmaakt van een bekende datalek bijgehouden door
+            <a href="https://www.haveibeenpwned.com">Have I Been Pwned</a>.</p>
+    </div>
+{% endblock %}

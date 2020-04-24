@@ -4,18 +4,17 @@ namespace Webstack\UserBundle\Controller;
 
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Google\GoogleAuthenticatorInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Webstack\AdminBundle\Controller\Controller;
 
 /**
- * @Route("/instellingen/beveiliging", methods={"GET", "POST"})
+ * Class TwoFactorAuthenticationController
+ * @package Webstack\UserBundle\Controller
  */
 class TwoFactorAuthenticationController extends Controller
 {
     /**
-     * @Route("/2fa")
      * @Template()
      * @param Request $request
      * @param GoogleAuthenticatorInterface $googleAuthenticator
