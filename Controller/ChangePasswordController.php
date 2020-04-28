@@ -6,6 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Webstack\UserBundle\Form\Type\ChangePasswordType;
 
 /**
@@ -14,6 +15,20 @@ use Webstack\UserBundle\Form\Type\ChangePasswordType;
  */
 class ChangePasswordController extends AbstractController
 {
+    /**
+     * @var EncoderFactoryInterface
+     */
+    private $encoderFactory;
+
+    /**
+     * ChangePasswordController constructor.
+     * @param EncoderFactoryInterface $encoderFactory
+     */
+    public function __construct(EncoderFactoryInterface $encoderFactory)
+    {
+        $this->encoderFactory = $encoderFactory;
+    }
+
     /**
      * @Template()
      * @param Request $request
@@ -26,7 +41,11 @@ class ChangePasswordController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getUser()->setPlainPassword($form->get('password')->getData());
+            $user = $this->getUser();
+            $encoder = $this->encoderFactory->getEncoder($user);
+            $password = $encoder->encodePassword($form->get('password')->getData(), $user->getSalt());
+
+            $user->setPassword($password);
 
             $this->getDoctrine()->getManager()->flush();
 

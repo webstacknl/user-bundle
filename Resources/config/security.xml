@@ -43,6 +43,7 @@
 
         <service id="webstack_user.change_password.controller" class="Webstack\UserBundle\Controller\ChangePasswordController" public="true">
             <tag name="controller.service_arguments"/>
+            <argument type="service" id="Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface" />
         </service>
 
         <service id="webstack_user.change_password.type" class="Webstack\UserBundle\Form\Type\ChangePasswordType" public="true">
