@@ -14,7 +14,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class ChangePasswordType
- * @package Webstack\UserBundle\Form\Type
  */
 class ChangePasswordType extends AbstractType
 {
@@ -24,8 +23,7 @@ class ChangePasswordType extends AbstractType
     private $security;
 
     /**
-     * UserType constructor.
-     *
+     * ChangePasswordType constructor.
      * @param Security $security
      */
     public function __construct(Security $security)

@@ -10,7 +10,6 @@ use Webstack\AdminBundle\Controller\Controller;
 
 /**
  * Class TwoFactorAuthenticationController
- * @package Webstack\UserBundle\Controller
  */
 class TwoFactorAuthenticationController extends Controller
 {
