@@ -11,7 +11,6 @@ use Webstack\UserBundle\Form\Type\ChangePasswordType;
 
 /**
  * Class ChangePasswordController
- * @package Webstack\UserBundle\Controller
  */
 class ChangePasswordController extends AbstractController
 {
