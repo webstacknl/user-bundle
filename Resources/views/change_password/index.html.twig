@@ -11,7 +11,7 @@
 
         <div id="form_errors"
              style="display: {% if formErrors is not empty %}block{% else %}none{% endif %};">
-            <h6 class="no-margin text-semibold">Er zijn een of meerdere fouten opgetreden:</h6>
+            <h6 class="no-margin text-semibold">Er zijn één of meerdere fouten opgetreden:</h6>
             <ul>
                 {% if formErrors is not empty %}
                     {% for error in formErrors %}
