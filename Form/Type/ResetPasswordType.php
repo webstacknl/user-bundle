@@ -5,6 +5,7 @@ namespace Webstack\UserBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Security;
@@ -55,7 +56,10 @@ class ResetPasswordType extends AbstractType
                 ]
             ],
             'invalid_message' => 'Ingevoerde wachtwoorden komen niet overeen',
-        ));
+            ))
+            ->add('submit', SubmitType::class, [
+                'label' => 'Wachtwoord wijzigen',
+            ]);
     }
 
     /**
@@ -64,15 +68,8 @@ class ResetPasswordType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => get_class($this->security->getUser())
+            'data_class' => get_class($this->security->getUser()),
+            'csrf_token_id' => 'resetting',
         ]);
-    }
-
-    /**
-     * @return string
-     */
-    public function getBlockPrefix(): string
-    {
-        return 'webstack_user_registration_reset_password';
     }
 }

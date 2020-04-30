@@ -56,7 +56,7 @@ class WebstackUserExtension extends Extension
             unset($config['confirmation']['from_email']);
         }
 
-        $container->setParameter('fos_user.registration.form.from_email', array($fromEmail['address'] => $fromEmail['sender_name']));
+        $container->setParameter('webstack_user.registration.from_email', $fromEmail);
     }
 
     /**

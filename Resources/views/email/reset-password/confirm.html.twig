@@ -1,0 +1,26 @@
+{% extends '@WebstackUser/email/base.html.twig' %}
+
+{% block greeting %}
+    Wachtwoord vergeten
+{% endblock %}
+
+{% block content %}
+    <div style="font-family: Arial, sans-serif; font-size: 16px; color: #636363; line-height: 20px; text-align: left;">
+        <p>
+            Geachte {{ user.lastname }},
+        </p>
+        <p>
+            Klik op onderstaande button om jouw wachtwoord opnieuw in te stellen.
+        </p>
+
+        <div>
+            <a href="{{ confirmationUrl }}">Wachtwoord instellen</a>
+        </div>
+
+        <p>
+            Mocht de knop "Wachtwoord instellen" niet werken, kopieer dan onderstaande link en plak het in de adresbalk van je browser:
+            <br>
+            {{ confirmationUrl }}
+        </p>
+    </div>
+{% endblock %}

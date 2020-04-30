@@ -2,14 +2,21 @@
 
 namespace Webstack\UserBundle\Controller;
 
+use DateTime;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
-use Webstack\UserBundle\Form\Type\ChangePasswordType;
+use Webstack\UserBundle\Form\Type\ResetPasswordType;
 use Webstack\UserBundle\Manager\UserManager;
 use Webstack\UserBundle\Model\User;
 
@@ -29,14 +36,42 @@ class ResetPasswordController extends AbstractController
     private $userManager;
 
     /**
-     * ResetPasswordController constructor.
+     * @var MailerInterface
+     */
+    private $mailer;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
+     * @var Security
+     */
+    private $security;
+
+    /**
+     * @var array
+     */
+    private $fromEmail;
+
+    /**
+     * ResetController constructor.
      * @param UserManager $userManager
      * @param TokenGeneratorInterface $tokenGenerator
+     * @param MailerInterface $mailer
+     * @param RouterInterface $router
+     * @param Security $security
+     * @param array $fromEmail
      */
-    public function __construct(UserManager $userManager, TokenGeneratorInterface $tokenGenerator)
+    public function __construct(UserManager $userManager, TokenGeneratorInterface $tokenGenerator, MailerInterface $mailer, RouterInterface $router, Security $security, array $fromEmail)
     {
         $this->tokenGenerator = $tokenGenerator;
         $this->userManager = $userManager;
+        $this->mailer = $mailer;
+        $this->router = $router;
+        $this->security = $security;
+        $this->fromEmail = $fromEmail;
     }
 
     /**
@@ -48,57 +83,64 @@ class ResetPasswordController extends AbstractController
     }
 
     /**
-     * @Route("/verstuur-email")
-     *
      * @param Request $request
      *
      * @return Response
-     * @throws Exception
+     * @throws TransportExceptionInterface
      */
     public function sendmail(Request $request): Response
     {
         $username = $request->request->get('username');
 
-        $client = $this->userManager->findByUsernameOrEmail($username);
+        $user = $this->userManager->findUser($username);
 
-        if (null !== $client) {
-            if (null === $client->getConfirmationToken()) {
-                $client->setConfirmationToken($this->tokenGenerator->generateToken());
+        if (null !== $user) {
+            if (null === $user->getConfirmationToken()) {
+                $user->setConfirmationToken($this->tokenGenerator->generateToken());
             }
 
-            $client->setPasswordRequestedAt(new DateTime());
+            $user->setPasswordRequestedAt(new DateTime());
 
             $this->getDoctrine()->getManager()->flush();
 
-            $this->userManager->sendResettingEmail($client);
+            $email = (new TemplatedEmail())
+                ->from(new Address($this->fromEmail['address'], $this->fromEmail['sender_name']))
+                ->to($user->getEmail())
+                ->subject('Wachtwoord resetten')
+                ->htmlTemplate('@WebstackUser/email/reset-password/confirm.html.twig')
+                ->context([
+                    'user' => $user,
+                    'confirmationUrl' => $this->router->generate('webstack_user_reset_password_reset', [
+                        'token' => $user->getConfirmationToken()
+                    ], UrlGeneratorInterface::ABSOLUTE_URL)
+                ]);
+
+            $this->mailer->send($email);
         }
 
-        return $this->redirectToRoute('app_client_resetting_checkemail', [
+        return $this->redirectToRoute('webstack_user_reset_password_check_email', [
             'username' => $username
         ]);
     }
 
     /**
-     * @Route("/controleer-email")
-     * @Template()
      * @param Request $request
      * @return array|RedirectResponse
      */
-    public function checkEmail(Request $request)
+    public function checkEmail(Request $request): Response
     {
         $username = $request->query->get('username');
 
         if (empty($username)) {
-            return new RedirectResponse($this->generateUrl('app_client_resetting_request'));
+            return new RedirectResponse($this->generateUrl('webstack_user_reset_password_index'));
         }
 
-        return [
+        return $this->render('@WebstackUser/reset_password/check_email.html.twig', [
             'email' => $username
-        ];
+        ]);
     }
 
     /**
-     * @Route("/{token}/instellen", methods={"GET", "POST"})
      * @Template()
      * @param Request $request
      * @param string $token
@@ -106,40 +148,30 @@ class ResetPasswordController extends AbstractController
      */
     public function reset(Request $request, string $token)
     {
-        $client = $this->getDoctrine()->getRepository(User::class)->findOneBy([
+        $user = $this->getDoctrine()->getRepository(get_class($this->security->getUser()))->findOneBy([
             'confirmationToken' => $token
         ]);
 
-        if ($client === null) {
-            return $this->redirectToRoute('app_client_security_login');
+        if ($user === null) {
+            return $this->redirectToRoute('app_security_login');
         }
 
-        $form = $this->createForm(ResettingFormType::class, $client);
+        $form = $this->createForm(ResetPasswordType::class, $user);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $client->setConfirmationToken(null);
+            $user->setConfirmationToken(null);
 
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('app_client_security_login');
+            return $this->redirectToRoute('app_security_login');
         }
 
         return [
             'form' => $form->createView(),
             'token' => $token
         ];
-    }
-
-    /**
-     * Returns the title for the controller which is used in the template for displaying purposes
-     *
-     * @return string
-     */
-    public static function getTitle(): string
-    {
-        return 'Wachtwoord vergeten';
     }
 }
