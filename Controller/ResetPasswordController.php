@@ -14,6 +14,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Webstack\UserBundle\Form\Type\ResetPasswordType;
@@ -51,9 +52,18 @@ class ResetPasswordController extends AbstractController
     private $security;
 
     /**
+     * @var EncoderFactoryInterface
+     */
+    private $encoderFactory;
+
+    /**
      * @var array
      */
     private $fromEmail;
+    /**
+     * @var string
+     */
+    private $userClass;
 
     /**
      * ResetController constructor.
@@ -62,16 +72,20 @@ class ResetPasswordController extends AbstractController
      * @param MailerInterface $mailer
      * @param RouterInterface $router
      * @param Security $security
+     * @param EncoderFactoryInterface $encoderFactory
      * @param array $fromEmail
+     * @param string $userClass
      */
-    public function __construct(UserManager $userManager, TokenGeneratorInterface $tokenGenerator, MailerInterface $mailer, RouterInterface $router, Security $security, array $fromEmail)
+    public function __construct(UserManager $userManager, TokenGeneratorInterface $tokenGenerator, MailerInterface $mailer, RouterInterface $router, Security $security, EncoderFactoryInterface $encoderFactory, array $fromEmail, string $userClass)
     {
         $this->tokenGenerator = $tokenGenerator;
         $this->userManager = $userManager;
         $this->mailer = $mailer;
         $this->router = $router;
         $this->security = $security;
+        $this->encoderFactory = $encoderFactory;
         $this->fromEmail = $fromEmail;
+        $this->userClass = $userClass;
     }
 
     /**
@@ -148,7 +162,7 @@ class ResetPasswordController extends AbstractController
      */
     public function reset(Request $request, string $token)
     {
-        $user = $this->getDoctrine()->getRepository(get_class($this->security->getUser()))->findOneBy([
+        $user = $this->getDoctrine()->getRepository($this->userClass)->findOneBy([
             'confirmationToken' => $token
         ]);
 
@@ -162,7 +176,12 @@ class ResetPasswordController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $encoder = $this->encoderFactory->getEncoder($user);
+            $password = $encoder->encodePassword($form->get('plainPassword')->getData(), $user->getSalt());
+
+            $user->setPassword($password);
             $user->setConfirmationToken(null);
+
 
             $this->getDoctrine()->getManager()->flush();
 

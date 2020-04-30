@@ -19,14 +19,20 @@ class ResetPasswordType extends AbstractType
      * @var Security
      */
     private $security;
+    /**
+     * @var string
+     */
+    private $userClass;
 
     /**
      * ResetPasswordType constructor.
      * @param Security $security
+     * @param string $userClass
      */
-    public function __construct(Security $security)
+    public function __construct(Security $security, string $userClass)
     {
         $this->security = $security;
+        $this->userClass = $userClass;
     }
 
     /**
@@ -35,7 +41,7 @@ class ResetPasswordType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('plainPassword', RepeatedType::class, array(
+            $builder->add('plainPassword', RepeatedType::class, array(
             'label' => 'Wachtwoord',
             'type' => PasswordType::class,
             'options' => array(
@@ -44,16 +50,10 @@ class ResetPasswordType extends AbstractType
                 ),
             ),
             'first_options' => [
-                'label' => 'form.new_password',
-                'attr' => [
-                    'placeholder' => 'Wachtwoord',
-                ]
+                'label' => 'Nieuw wachtwoord',
             ],
             'second_options' => [
-                'label' => 'form.new_password_confirmation',
-                'attr' => [
-                    'placeholder' => 'Herhaal wachtwoord'
-                ]
+                'label' => 'Nieuw wachtwoord herhalen',
             ],
             'invalid_message' => 'Ingevoerde wachtwoorden komen niet overeen',
             ))
@@ -68,7 +68,7 @@ class ResetPasswordType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => get_class($this->security->getUser()),
+            'data_class' => $this->userClass,
             'csrf_token_id' => 'resetting',
         ]);
     }
