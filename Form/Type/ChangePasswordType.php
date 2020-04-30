@@ -78,7 +78,7 @@ class ChangePasswordType extends AbstractType
                 'second_options' => [
                     'label' => 'Nieuw wachtwoord herhalen'
                 ],
-                'invalid_message' => 'Het ingevoerde wachtwoord komt niet overeen.',
+                'invalid_message' => 'De ingevoerde wachtwoorden komen niet overeen.',
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Wachtwoord wijzigen',
