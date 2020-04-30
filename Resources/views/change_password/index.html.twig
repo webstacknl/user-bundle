@@ -1,0 +1,31 @@
+{% block body %}
+    <div>
+        {% set formErrors = form.vars.errors.form.getErrors(true) %}
+
+        {% if formErrors is not empty %}
+            <div id="form_errors">
+                <strong>Er zijn één of meerdere fouten opgetreden:</strong>
+                <ul>
+                    {% for error in formErrors %}
+                        <li>{{ error.message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% include '@WebstackUser/change_password/form.html.twig' %}
+    </div>
+    <div>
+        Het nieuwe wachtwoord dient te bestaan uit
+        <ul>
+            <li>Kleine letters</li>
+            <li>Hoofdletters</li>
+            <li>Cijfers</li>
+            <li>Speciale tekens</li>
+            <li>Minimaal 13 tekens lang</li>
+        </ul>
+
+        <p>Er wordt tevens gecontroleerd of het wachtwoord geen deel uitmaakt van een bekende datalek bijgehouden door
+            <a href="https://www.haveibeenpwned.com">Have I Been Pwned</a>.</p>
+    </div>
+{% endblock %}
