@@ -346,6 +346,12 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
         // forces the object to look "dirty" to Doctrine. Avoids
         // Doctrine *not* saving this entity, if only plainPassword changes
         $this->password = null;
+
+        try {
+            $this->updatedAt = new DateTime();
+        } catch (Exception $e) {
+            //
+        }
     }
 
     /**
