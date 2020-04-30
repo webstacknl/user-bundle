@@ -69,9 +69,6 @@ class ChangePasswordType extends AbstractType
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Wachtwoord wijzigen',
-                'attr' => [
-                    'class' => 'btn btn-theme btn-block'
-                ]
             ]);
     }
 
@@ -83,13 +80,5 @@ class ChangePasswordType extends AbstractType
         $resolver->setDefaults([
             'data_class' => get_class($this->security->getUser())
         ]);
-    }
-
-    /**
-     * @return string
-     */
-    public function getBlockPrefix(): string
-    {
-        return 'webstack_user_registration_change_password';
     }
 }
