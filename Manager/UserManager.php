@@ -107,7 +107,7 @@ class UserManager
 
     /**
      * @param $token
-     * @return object|null
+     * @return object|UserInterface|null
      */
     public function findUserByConfirmationToken($token)
     {
@@ -148,7 +148,7 @@ class UserManager
     }
 
     /**
-     * @return object[]
+     * @return array
      */
     public function findUsers()
     {

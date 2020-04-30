@@ -44,7 +44,9 @@ class ChangePasswordType extends AbstractType
                 'label' => 'Huidig wachtwoord',
                 'mapped' => false,
                 'constraints' => [
-                    new NotBlank(),
+                    new NotBlank([
+                        'message' => 'Er is geen huidig wachtwoord ingevuld.',
+                    ]),
                     new UserPassword([
                         'message' => 'Uw huidig wachtwoord is niet juist.',
                     ]),
@@ -76,7 +78,7 @@ class ChangePasswordType extends AbstractType
                 'second_options' => [
                     'label' => 'Nieuw wachtwoord herhalen'
                 ],
-                'invalid_message' => 'User password mismatch',
+                'invalid_message' => 'Het ingevoerde wachtwoord komt niet overeen.',
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Wachtwoord wijzigen',
