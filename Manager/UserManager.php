@@ -44,7 +44,7 @@ class UserManager
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function createUser()
     {
@@ -106,7 +106,8 @@ class UserManager
     }
 
     /**
-     * {@inheritdoc}
+     * @param $token
+     * @return object|null
      */
     public function findUserByConfirmationToken($token)
     {
@@ -114,7 +115,7 @@ class UserManager
     }
 
     /**
-     * {@inheritdoc}
+     * @param UserInterface $user
      */
     public function updatePassword(UserInterface $user)
     {
@@ -130,7 +131,8 @@ class UserManager
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $criteria
+     * @return object|null
      */
     public function findUserBy(array $criteria)
     {
@@ -146,7 +148,7 @@ class UserManager
     }
 
     /**
-     * {@inheritdoc}
+     * @return object[]
      */
     public function findUsers()
     {
@@ -154,7 +156,7 @@ class UserManager
     }
 
     /**
-     * {@inheritdoc}
+     * @param UserInterface $user
      */
     public function reloadUser(UserInterface $user)
     {
@@ -162,7 +164,8 @@ class UserManager
     }
 
     /**
-     * {@inheritdoc}
+     * @param UserInterface $user
+     * @param bool $andFlush
      */
     public function updateUser(UserInterface $user, $andFlush = true)
     {
@@ -182,7 +185,7 @@ class UserManager
     }
 
     /**
-     * {@inheritdoc}
+     * @param UserInterface $user
      */
     public function deleteUser(UserInterface $user)
     {

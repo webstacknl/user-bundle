@@ -6,11 +6,13 @@
 
 {% block body %}
     <div>
-        {% if form.vars.errors.form.getErrors(true) is not empty %}
+        {% set formErrors = form.vars.errors.form.getErrors(true) %}
+
+        {% if formErrors %}
             <div id="form_errors">
-                <h6>Er zijn één of meerdere fouten opgetreden:</h6>
+                <strong>Er zijn één of meerdere fouten opgetreden:</strong>
                 <ul>
-                    {% if form.vars.errors.form.getErrors(true) is not empty %}
+                    {% if formErrors is not empty %}
                         {% for error in formErrors %}
                             <li>{{ error.message }}</li>
                         {% endfor %}
