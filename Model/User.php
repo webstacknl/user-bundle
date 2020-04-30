@@ -6,14 +6,12 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface as EmailTwoFactorInterface;
 use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface as GoogleTwoFactorInterface;
 use Scheb\TwoFactorBundle\Model\PreferredProviderInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 use Webstack\AdminBundle\Traits\PrimaryUuidTrait;
 use Webstack\AdminBundle\Traits\User\EmailTwoFactorTrait;
 use Webstack\AdminBundle\Traits\User\GoogleTwoFactorTrait;
@@ -76,8 +74,6 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * Plain password. Used for model validation. Must not be persisted.
      *
      * @var string
-     *
-     * @Assert\NotCompromisedPassword()
      */
     protected $plainPassword;
 
@@ -311,7 +307,7 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
     }
 
     /**
-     * Get password (bcrypt)
+     * Get password
      *
      * @return null|string
      */
@@ -321,7 +317,7 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
     }
 
     /**
-     * Set password (bcrypt)
+     * Set password
      *
      * @param string $password
      */

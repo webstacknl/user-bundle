@@ -2,6 +2,7 @@
 
 namespace Webstack\UserBundle\Form\Type;
 
+use Rollerworks\Component\PasswordStrength\Validator\Constraints\PasswordStrength;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -11,6 +12,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 
 /**
  * Class ChangePasswordType
@@ -42,7 +44,9 @@ class ChangePasswordType extends AbstractType
                 'label' => 'Huidig wachtwoord',
                 'mapped' => false,
                 'constraints' => [
-                    new NotBlank(),
+                    new NotBlank([
+                        'message' => 'Er is geen huidig wachtwoord ingevuld.',
+                    ]),
                     new UserPassword([
                         'message' => 'Uw huidig wachtwoord is niet juist.',
                     ]),
@@ -54,6 +58,15 @@ class ChangePasswordType extends AbstractType
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
+                'constraints' => [
+                    new NotCompromisedPassword([
+                        'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
+                    ]),
+                    new PasswordStrength([
+                        'minStrength' => 4,
+                        'minLength' => 8
+                    ])
+                ],
                 'options' => [
                     'attr' => [
                         'autocomplete' => 'new-password',
@@ -65,13 +78,10 @@ class ChangePasswordType extends AbstractType
                 'second_options' => [
                     'label' => 'Nieuw wachtwoord herhalen'
                 ],
-                'invalid_message' => 'fos_user.password.mismatch',
+                'invalid_message' => 'De ingevoerde wachtwoorden komen niet overeen.',
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Wachtwoord wijzigen',
-                'attr' => [
-                    'class' => 'btn btn-theme btn-block'
-                ]
             ]);
     }
 
@@ -83,13 +93,5 @@ class ChangePasswordType extends AbstractType
         $resolver->setDefaults([
             'data_class' => get_class($this->security->getUser())
         ]);
-    }
-
-    /**
-     * @return string
-     */
-    public function getBlockPrefix(): string
-    {
-        return 'webstack_user_registration_change_password';
     }
 }

@@ -3,30 +3,55 @@
 namespace Webstack\UserBundle\Controller;
 
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Google\GoogleAuthenticatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Webstack\AdminBundle\Controller\Controller;
 
 /**
  * Class TwoFactorAuthenticationController
  */
-class TwoFactorAuthenticationController extends Controller
+class TwoFactorAuthenticationController extends AbstractController
 {
+    /**
+     * @var GoogleAuthenticatorInterface
+     */
+    private $googleAuthenticator;
+    /**
+     * @var string
+     */
+    private $googleServerName;
+    /**
+     * @var string
+     */
+    private $googleIssue;
+
+    /**
+     * TwoFactorAuthenticationController constructor.
+     * @param GoogleAuthenticatorInterface $googleAuthenticator
+     * @param string $googleServerName
+     * @param string $googleIssue
+     */
+    public function __construct(GoogleAuthenticatorInterface $googleAuthenticator, string $googleServerName, string $googleIssue)
+    {
+        $this->googleAuthenticator = $googleAuthenticator;
+        $this->googleServerName = $googleServerName;
+        $this->googleIssue = $googleIssue;
+    }
+
     /**
      * @Template()
      * @param Request $request
-     * @param GoogleAuthenticatorInterface $googleAuthenticator
      * @return array|RedirectResponse
      */
-    public function index(Request $request, GoogleAuthenticatorInterface $googleAuthenticator)
+    public function index(Request $request)
     {
-        $secret = $request->get('secret', $googleAuthenticator->generateSecret());
+        $secret = $request->get('secret', $this->googleAuthenticator->generateSecret());
 
         $user = $this->getUser();
         $user->setGoogleAuthenticatorSecret($secret);
 
-        if ($request->isMethod('POST') && $googleAuthenticator->checkCode($this->getUser(), $request->get('code'))) {
+        if ($request->isMethod('POST') && $this->googleAuthenticator->checkCode($this->getUser(), $request->get('code'))) {
             $this->getDoctrine()->getManager()->flush();
 
             $this->addFlash('success', 'Two factor authenticatie geconfigureerd.');
@@ -47,8 +72,8 @@ class TwoFactorAuthenticationController extends Controller
     private function getQrContent(string $secret): string
     {
         $username = $this->getUser()->getGoogleAuthenticatorUsername();
-        $server = $this->getParameter('scheb_two_factor.google.server_name');
-        $issuer = $this->getParameter('scheb_two_factor.google.issuer');
+        $server = $this->googleServerName;
+        $issuer = $this->googleIssue;
 
         $userAndHost = rawurlencode($username) . ($server ? '@' . rawurlencode($server) : '');
 

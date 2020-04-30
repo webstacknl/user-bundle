@@ -38,12 +38,15 @@
         </service>
 
         <service id="webstack_user.two_factor_authentication.controller" class="Webstack\UserBundle\Controller\TwoFactorAuthenticationController" public="true">
+            <argument type="service" id="scheb_two_factor.security.google_authenticator" />
+            <argument key="$googleServerName">%scheb_two_factor.google.server_name%</argument>
+            <argument key="$googleIssue">%scheb_two_factor.google.issuer%</argument>
             <tag name="controller.service_arguments"/>
         </service>
 
         <service id="webstack_user.change_password.controller" class="Webstack\UserBundle\Controller\ChangePasswordController" public="true">
-            <tag name="controller.service_arguments"/>
             <argument type="service" id="Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface" />
+            <tag name="controller.service_arguments"/>
         </service>
 
         <service id="webstack_user.reset_password.controller" class="Webstack\UserBundle\Controller\ResetPasswordController" public="true">
