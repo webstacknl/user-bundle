@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Rollerworks\Component\PasswordStrength\Validator\Constraints\PasswordStrength;
 use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface as EmailTwoFactorInterface;
 use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface as GoogleTwoFactorInterface;
 use Scheb\TwoFactorBundle\Model\PreferredProviderInterface;
@@ -78,6 +79,7 @@ abstract class User implements UserInterface, EquatableInterface, GroupableInter
      * @var string
      *
      * @Assert\NotCompromisedPassword()
+     * @PasswordStrength(minLength=8, minStrength=5)
      */
     protected $plainPassword;
 
