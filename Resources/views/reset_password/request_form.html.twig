@@ -1,0 +1,15 @@
+<form action="{{ path('webstack_user_reset_password_send_email') }}" method="POST">
+    <div>
+    <label for="username"><span>E-mail</span></label>
+    <input type="text" id="username" name="username"
+           required="required" autofocus
+           autocomplete="username"
+           placeholder="E-mail"/>
+    </div>
+    <div class="submit">
+        <button type="submit">
+            Reset wachtwoord
+        </button>
+    </div>
+</form>
+
