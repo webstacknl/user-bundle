@@ -67,7 +67,7 @@ class ResetPasswordType extends AbstractType
             'second_options' => [
                 'label' => 'Nieuw wachtwoord herhalen',
             ],
-            'invalid_message' => 'Ingevoerde wachtwoorden komen niet overeen',
+                'invalid_message' => 'Ingevoerde wachtwoorden komen niet overeen',
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Wachtwoord wijzigen',
