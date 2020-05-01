@@ -2,12 +2,6 @@
 
 namespace Webstack\UserBundle\Form\Type;
 
-use App\DBAL\Types\ExperienceType;
-use App\DBAL\Types\GenderType;
-use App\Entity\Instrument;
-use App\Form\Type\AddressType;
-use App\Form\Type\CheckboxUuidEntityChoiceType;
-use App\Form\Type\RadioChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
