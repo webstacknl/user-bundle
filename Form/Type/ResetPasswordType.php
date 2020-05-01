@@ -44,14 +44,14 @@ class ResetPasswordType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('password', RepeatedType::class, array(
+        $builder->add('password', RepeatedType::class, [
             'label' => 'Wachtwoord',
             'type' => PasswordType::class,
-            'options' => array(
-                'attr' => array(
+            'options' => [
+                'attr' => [
                     'autocomplete' => 'new-password',
-                ),
-            ),
+                ],
+            ],
             'constraints' => [
                 new NotCompromisedPassword([
                     'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
@@ -68,7 +68,7 @@ class ResetPasswordType extends AbstractType
                 'label' => 'Nieuw wachtwoord herhalen',
             ],
             'invalid_message' => 'Ingevoerde wachtwoorden komen niet overeen',
-            ))
+            ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Wachtwoord wijzigen',
             ]);
