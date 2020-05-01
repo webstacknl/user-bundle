@@ -6,17 +6,16 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Webstack\UserBundle\Form\Type\ProfileFormType;
 
 /**
  * Class ProfileController
- * @Route("/account/mijn-gegevens")
  */
 class ProfileController extends AbstractController
 {
     /**
      * @Template()
+     *
      * @return array
      */
     public function index(): array
