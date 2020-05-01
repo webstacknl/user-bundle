@@ -2,6 +2,7 @@
 
 namespace Webstack\UserBundle\Form\Type;
 
+use Rollerworks\Component\PasswordStrength\Validator\Constraints\PasswordStrength;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -9,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 
 /**
  * Class ResetPasswordType
@@ -42,7 +44,7 @@ class ResetPasswordType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-            $builder->add('plainPassword', RepeatedType::class, array(
+        $builder->add('password', RepeatedType::class, array(
             'label' => 'Wachtwoord',
             'type' => PasswordType::class,
             'options' => array(
@@ -50,6 +52,15 @@ class ResetPasswordType extends AbstractType
                     'autocomplete' => 'new-password',
                 ),
             ),
+            'constraints' => [
+                new NotCompromisedPassword([
+                    'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
+                ]),
+                new PasswordStrength([
+                    'minStrength' => 4,
+                    'minLength' => 8
+                ])
+            ],
             'first_options' => [
                 'label' => 'Nieuw wachtwoord',
             ],

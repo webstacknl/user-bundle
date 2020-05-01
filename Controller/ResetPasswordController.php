@@ -177,7 +177,7 @@ class ResetPasswordController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $encoder = $this->encoderFactory->getEncoder($user);
-            $password = $encoder->encodePassword($form->get('plainPassword')->getData(), $user->getSalt());
+            $password = $encoder->encodePassword($form->get('password')->getData(), $user->getSalt());
 
             $user->setPassword($password);
             $user->setConfirmationToken(null);

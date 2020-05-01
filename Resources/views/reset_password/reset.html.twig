@@ -6,5 +6,18 @@
 </div>
 
 <div>
+    {% set formErrors = form.vars.errors.form.getErrors(true) %}
+
+    {% if formErrors is not empty %}
+        <div id="form_errors">
+            <strong>Er zijn één of meerdere fouten opgetreden:</strong>
+            <ul>
+                {% for error in formErrors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
     {% include '@WebstackUser/reset_password/reset_form.html.twig' %}
 </div>
