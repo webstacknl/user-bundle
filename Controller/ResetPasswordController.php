@@ -60,6 +60,7 @@ class ResetPasswordController extends AbstractController
      * @var array
      */
     private $fromEmail;
+
     /**
      * @var string
      */
@@ -102,7 +103,7 @@ class ResetPasswordController extends AbstractController
      * @return Response
      * @throws TransportExceptionInterface
      */
-    public function sendmail(Request $request): Response
+    public function sendEmail(Request $request): Response
     {
         $username = $request->request->get('username');
 
@@ -150,7 +151,7 @@ class ResetPasswordController extends AbstractController
         }
 
         return $this->render('@WebstackUser/reset_password/check_email.html.twig', [
-            'email' => $username
+            'username' => $username
         ]);
     }
 
@@ -175,13 +176,11 @@ class ResetPasswordController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $encoder = $this->encoderFactory->getEncoder($user);
             $password = $encoder->encodePassword($form->get('plainPassword')->getData(), $user->getSalt());
 
             $user->setPassword($password);
             $user->setConfirmationToken(null);
-
 
             $this->getDoctrine()->getManager()->flush();
 

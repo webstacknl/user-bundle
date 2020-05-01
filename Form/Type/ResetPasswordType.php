@@ -19,6 +19,7 @@ class ResetPasswordType extends AbstractType
      * @var Security
      */
     private $security;
+
     /**
      * @var string
      */
