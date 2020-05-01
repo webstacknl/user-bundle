@@ -1,0 +1,28 @@
+<div>
+    <h1>
+        Mijn profiel
+    </h1>
+    <table class="table">
+        <tr>
+            <th>Voornaam</th>
+            <td>{{ user.firstName }}</td>
+        </tr>
+        {% if user.lastNamePrefix %}
+            <tr>
+                <th>Tussenvoegsel</th>
+                <td>{{ user.lastNamePrefix }}</td>
+            </tr>
+        {% endif %}
+        <tr>
+            <th>Achternaam</th>
+            <td>{{ user.lastName }}</td>
+        </tr>
+        <tr>
+            <th>E-mailadres</th>
+            <td>{{ user.email }}</td>
+        </tr>
+    </table>
+    <a href="{{ path('webstack_user_profile_edit') }}">
+        Profiel wijzigen
+    </a>
+</div>
