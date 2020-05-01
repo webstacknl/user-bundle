@@ -44,7 +44,7 @@ class ProfileController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            $this->addFlash('success', 'Je profiel is succesvol aangepast.');
+            $this->addFlash('success', 'Uw gegevens is succesvol aangepast.');
 
             return $this->redirectToRoute('webstack_user_profile_index');
         }
