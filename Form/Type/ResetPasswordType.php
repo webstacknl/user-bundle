@@ -28,14 +28,27 @@ class ResetPasswordType extends AbstractType
     private $userClass;
 
     /**
+     * @var int
+     */
+    private $minLength;
+    /**
+     * @var int
+     */
+    private $minStrength;
+
+    /**
      * ResetPasswordType constructor.
      * @param Security $security
      * @param string $userClass
+     * @param int $minStrength
+     * @param int $minLength
      */
-    public function __construct(Security $security, string $userClass)
+    public function __construct(Security $security, string $userClass, int $minStrength, int $minLength)
     {
         $this->security = $security;
         $this->userClass = $userClass;
+        $this->minStrength = $minStrength;
+        $this->minLength = $minLength;
     }
 
     /**
@@ -57,8 +70,8 @@ class ResetPasswordType extends AbstractType
                     'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
                 ]),
                 new PasswordStrength([
-                    'minStrength' => 4,
-                    'minLength' => 8
+                    'minStrength' => $this->minStrength,
+                    'minLength' => $this->minLength
                 ])
             ],
             'first_options' => [

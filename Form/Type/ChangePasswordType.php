@@ -25,12 +25,26 @@ class ChangePasswordType extends AbstractType
     private $security;
 
     /**
+     * @var int
+     */
+    private $minLength;
+
+    /**
+     * @var int
+     */
+    private $minStrength;
+
+    /**
      * ChangePasswordType constructor.
      * @param Security $security
+     * @param int $minStrength
+     * @param int $minLength
      */
-    public function __construct(Security $security)
+    public function __construct(Security $security, int $minLength, int $minStrength)
     {
         $this->security = $security;
+        $this->minStrength = $minStrength;
+        $this->minLength = $minLength;
     }
 
     /**
@@ -63,8 +77,8 @@ class ChangePasswordType extends AbstractType
                         'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
                     ]),
                     new PasswordStrength([
-                        'minStrength' => 4,
-                        'minLength' => 8
+                        'minStrength' => $this->minStrength,
+                        'minLength' => $this->minLength
                     ])
                 ],
                 'options' => [
