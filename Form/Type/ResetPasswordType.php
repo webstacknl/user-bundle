@@ -31,6 +31,7 @@ class ResetPasswordType extends AbstractType
      * @var int
      */
     private $minLength;
+    
     /**
      * @var int
      */
