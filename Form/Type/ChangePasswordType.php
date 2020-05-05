@@ -27,12 +27,12 @@ class ChangePasswordType extends AbstractType
     /**
      * @var int
      */
-    private $minLength;
+    protected $minLength;
 
     /**
      * @var int
      */
-    private $minStrength;
+    protected $minStrength;
 
     /**
      * ChangePasswordType constructor.

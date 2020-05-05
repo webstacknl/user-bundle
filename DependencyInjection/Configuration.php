@@ -40,8 +40,8 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('password')
                 ->isRequired()
                     ->children()
-                        ->scalarNode('minStrenght')->isRequired()->cannotBeEmpty()->end()
-                        ->scalarNode('minLenght')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('min_strenght')->isRequired()->defaultValue(4)->end()
+                        ->scalarNode('min_lenght')->isRequired()->defaultValue(8)->end()
                     ->end()
                 ->end()
             ->end();

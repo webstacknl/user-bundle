@@ -32,11 +32,8 @@ class WebstackUserExtension extends Extension
         $container->setParameter('webstack_user.model.user.class.email_as_username', $config['use_email_as_username']);
 
         if (isset($config['password'])) {
-            $container->setParameter('webstack_user.security.password.minStrength', $config['password']['minStrenght']);
-            $container->setParameter('webstack_user.security.password.minLength', $config['password']['minLenght']);
-        } else {
-            $container->setParameter('webstack_user.security.password.minStrength', 4);
-            $container->setParameter('webstack_user.security.password.minLength', 8);
+            $container->setParameter('webstack_user.security.password.min_strength', $config['password']['min_strenght']);
+            $container->setParameter('webstack_user.security.password.min_length', $config['password']['min_lenght']);
         }
 
         if (($config['registration']['enabled'])) {
