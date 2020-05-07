@@ -25,6 +25,11 @@ class ChangePasswordType extends AbstractType
     private $security;
 
     /**
+     * @var bool
+     */
+    private $passwordCompromised;
+
+    /**
      * @var int
      */
     protected $minLength;
@@ -37,12 +42,14 @@ class ChangePasswordType extends AbstractType
     /**
      * ChangePasswordType constructor.
      * @param Security $security
-     * @param int $minStrength
+     * @param bool $passwordCompromised
      * @param int $minLength
+     * @param int $minStrength
      */
-    public function __construct(Security $security, int $minLength, int $minStrength)
+    public function __construct(Security $security, bool $passwordCompromised, int $minLength, int $minStrength)
     {
         $this->security = $security;
+        $this->passwordCompromised = $passwordCompromised;
         $this->minStrength = $minStrength;
         $this->minLength = $minLength;
     }
@@ -53,6 +60,21 @@ class ChangePasswordType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $notPasswordCompromised = null;
+        $passwordStrength = new PasswordStrength([
+            'minStrength' => $this->minStrength,
+            'minLength' => $this->minLength
+        ]);
+
+        if ($this->passwordCompromised) {
+            $notPasswordCompromised = [
+                new NotCompromisedPassword([
+                    'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
+                ]),
+                $passwordStrength
+            ];
+        }
+
         $builder
             ->add('current_password', PasswordType::class, [
                 'label' => 'Huidig wachtwoord',
@@ -63,7 +85,7 @@ class ChangePasswordType extends AbstractType
                     ]),
                     new UserPassword([
                         'message' => 'Uw huidig wachtwoord is niet juist.',
-                    ]),
+                    ])
                 ],
                 'attr' => [
                     'autocomplete' => 'current-password',
@@ -72,15 +94,7 @@ class ChangePasswordType extends AbstractType
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
-                'constraints' => [
-                    new NotCompromisedPassword([
-                        'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
-                    ]),
-                    new PasswordStrength([
-                        'minStrength' => $this->minStrength,
-                        'minLength' => $this->minLength
-                    ])
-                ],
+                'constraints' => $notPasswordCompromised ?? [$passwordStrength],
                 'options' => [
                     'attr' => [
                         'autocomplete' => 'new-password',

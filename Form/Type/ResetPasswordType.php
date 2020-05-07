@@ -28,6 +28,11 @@ class ResetPasswordType extends AbstractType
     private $userClass;
 
     /**
+     * @var bool
+     */
+    private $passwordCompromised;
+
+    /**
      * @var int
      */
     protected $minLength;
@@ -41,13 +46,15 @@ class ResetPasswordType extends AbstractType
      * ResetPasswordType constructor.
      * @param Security $security
      * @param string $userClass
+     * @param bool $passwordCompromised
      * @param int $minStrength
      * @param int $minLength
      */
-    public function __construct(Security $security, string $userClass, int $minStrength, int $minLength)
+    public function __construct(Security $security, string $userClass, bool $passwordCompromised, int $minStrength, int $minLength)
     {
         $this->security = $security;
         $this->userClass = $userClass;
+        $this->passwordCompromised = $passwordCompromised;
         $this->minStrength = $minStrength;
         $this->minLength = $minLength;
     }
@@ -58,6 +65,21 @@ class ResetPasswordType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $notPasswordCompromised = null;
+        $passwordStrength = new PasswordStrength([
+            'minStrength' => $this->minStrength,
+            'minLength' => $this->minLength
+        ]);
+
+        if ($this->passwordCompromised) {
+            $notPasswordCompromised = [
+                new NotCompromisedPassword([
+                    'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
+                ]),
+                $passwordStrength
+            ];
+        }
+
         $builder->add('password', RepeatedType::class, [
             'label' => 'Wachtwoord',
             'type' => PasswordType::class,
@@ -66,15 +88,7 @@ class ResetPasswordType extends AbstractType
                     'autocomplete' => 'new-password',
                 ],
             ],
-            'constraints' => [
-                new NotCompromisedPassword([
-                    'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
-                ]),
-                new PasswordStrength([
-                    'minStrength' => $this->minStrength,
-                    'minLength' => $this->minLength
-                ])
-            ],
+            'constraints' => $notPasswordCompromised ?? [$passwordStrength],
             'first_options' => [
                 'label' => 'Nieuw wachtwoord',
             ],
