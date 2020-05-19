@@ -226,7 +226,7 @@ class UserManager
      * @param User $user
      * @throws TransportExceptionInterface
      */
-    public function sendInvitation(User $user)
+    public function sendInvitation(User $user): void
     {
         if (null !== $user) {
             $fromEmail = $this->parameterBag->get('webstack_user.registration.from_email');
