@@ -241,9 +241,9 @@ class UserManager
 
             $email = (new TemplatedEmail())
                 ->from(new Address($fromEmail['address'], $fromEmail['sender_name']))
-                ->to($user->getEmail())
+                ->to(new Address($user->getEmail(), $user->getLastName()))
                 ->subject('Bevestig uw account')
-                ->htmlTemplate('@WebstackUser/email/send-invitation/index.html.twig')
+                ->htmlTemplate('@WebstackUser/email/invitation/index.html.twig')
                 ->context([
                     'user' => $user,
                     'confirmationUrl' => $this->router->generate('webstack_user_reset_password_reset', [
