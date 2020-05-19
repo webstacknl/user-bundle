@@ -224,7 +224,6 @@ class UserManager
 
     /**
      * @param User $user
-     * @return mixed
      * @throws TransportExceptionInterface
      */
     public function sendInvitation(User $user)
