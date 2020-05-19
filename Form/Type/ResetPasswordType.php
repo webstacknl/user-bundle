@@ -70,7 +70,7 @@ class ResetPasswordType extends AbstractType
                 'invalid_message' => 'Ingevoerde wachtwoorden komen niet overeen',
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Wachtwoord instellen',
+                'label' => 'Opslaan',
             ]);
     }
 
