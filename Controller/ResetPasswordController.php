@@ -181,7 +181,6 @@ class ResetPasswordController extends AbstractController
 
             $user->setPassword($password);
             $user->setConfirmationToken(null);
-            $user->setEnabled(true);
 
             $this->getDoctrine()->getManager()->flush();
 
