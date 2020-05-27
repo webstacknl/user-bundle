@@ -1,0 +1,26 @@
+{% extends '@WebstackUser/email/base.html.twig' %}
+
+{% block greeting %}
+    Bevestig uw account
+{% endblock %}
+
+{% block content %}
+    <div style="font-family: Arial, sans-serif; font-size: 16px; color: #636363; line-height: 20px; text-align: left;">
+        <p>
+            Beste {{ user.firstname }},
+        </p>
+        <p>
+            Uw account is aangemaakt, klik op onderstaande link om een wachtwoord in te stellen.
+        </p>
+
+        <div>
+            <a href="{{ confirmationUrl }}">Wachtwoord instellen</a>
+        </div>
+
+        <p>
+            Mocht de link "Wachtwoord instellen" niet werken, kopieer dan onderstaande link en plak deze in de adresbalk van de browser:
+            <br>
+            {{ confirmationUrl }}
+        </p>
+    </div>
+{% endblock %}

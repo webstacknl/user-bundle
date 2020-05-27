@@ -62,15 +62,15 @@ class ResetPasswordType extends AbstractType
                 ])
             ],
             'first_options' => [
-                'label' => 'Nieuw wachtwoord',
+                'label' => 'Wachtwoord',
             ],
             'second_options' => [
-                'label' => 'Nieuw wachtwoord herhalen',
+                'label' => 'Wachtwoord herhalen',
             ],
                 'invalid_message' => 'Ingevoerde wachtwoorden komen niet overeen',
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Wachtwoord wijzigen',
+                'label' => 'Opslaan',
             ]);
     }
 
