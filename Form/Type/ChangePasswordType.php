@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
+use Webstack\UserBundle\Manager\UserManager;
 
 /**
  * Class ChangePasswordType
@@ -25,33 +26,19 @@ class ChangePasswordType extends AbstractType
     private $security;
 
     /**
-     * @var bool
+     * @var UserManager
      */
-    private $passwordCompromised;
-
-    /**
-     * @var int
-     */
-    protected $minLength;
-
-    /**
-     * @var int
-     */
-    protected $minStrength;
+    private $userManager;
 
     /**
      * ChangePasswordType constructor.
      * @param Security $security
-     * @param bool $passwordCompromised
-     * @param int $minLength
-     * @param int $minStrength
+     * @param UserManager $userManager
      */
-    public function __construct(Security $security, bool $passwordCompromised, int $minLength, int $minStrength)
+    public function __construct(Security $security, UserManager $userManager)
     {
         $this->security = $security;
-        $this->passwordCompromised = $passwordCompromised;
-        $this->minStrength = $minStrength;
-        $this->minLength = $minLength;
+        $this->userManager = $userManager;
     }
 
     /**
@@ -60,21 +47,6 @@ class ChangePasswordType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $notPasswordCompromised = null;
-        $passwordStrength = new PasswordStrength([
-            'minStrength' => $this->minStrength,
-            'minLength' => $this->minLength
-        ]);
-
-        if ($this->passwordCompromised) {
-            $notPasswordCompromised = [
-                new NotCompromisedPassword([
-                    'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
-                ]),
-                $passwordStrength
-            ];
-        }
-
         $builder
             ->add('current_password', PasswordType::class, [
                 'label' => 'Huidig wachtwoord',
@@ -94,7 +66,7 @@ class ChangePasswordType extends AbstractType
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
-                'constraints' => $notPasswordCompromised ?? [$passwordStrength],
+                'constraints' => $this->userManager->getPasswordConstraints(),
                 'options' => [
                     'attr' => [
                         'autocomplete' => 'new-password',

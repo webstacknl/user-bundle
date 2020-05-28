@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
+use Webstack\UserBundle\Manager\UserManager;
 
 /**
  * Class ResetPasswordType
@@ -23,40 +24,26 @@ class ResetPasswordType extends AbstractType
     private $security;
 
     /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
      * @var string
      */
     private $userClass;
 
     /**
-     * @var bool
-     */
-    private $passwordCompromised;
-
-    /**
-     * @var int
-     */
-    protected $minLength;
-
-    /**
-     * @var int
-     */
-    protected $minStrength;
-
-    /**
      * ResetPasswordType constructor.
      * @param Security $security
+     * @param UserManager $userManager
      * @param string $userClass
-     * @param bool $passwordCompromised
-     * @param int $minStrength
-     * @param int $minLength
      */
-    public function __construct(Security $security, string $userClass, bool $passwordCompromised, int $minStrength, int $minLength)
+    public function __construct(Security $security, UserManager $userManager, string $userClass)
     {
         $this->security = $security;
+        $this->userManager = $userManager;
         $this->userClass = $userClass;
-        $this->passwordCompromised = $passwordCompromised;
-        $this->minStrength = $minStrength;
-        $this->minLength = $minLength;
     }
 
     /**
@@ -65,21 +52,6 @@ class ResetPasswordType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $notPasswordCompromised = null;
-        $passwordStrength = new PasswordStrength([
-            'minStrength' => $this->minStrength,
-            'minLength' => $this->minLength
-        ]);
-
-        if ($this->passwordCompromised) {
-            $notPasswordCompromised = [
-                new NotCompromisedPassword([
-                    'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
-                ]),
-                $passwordStrength
-            ];
-        }
-
         $builder->add('password', RepeatedType::class, [
             'label' => 'Wachtwoord',
             'type' => PasswordType::class,
@@ -88,7 +60,7 @@ class ResetPasswordType extends AbstractType
                     'autocomplete' => 'new-password',
                 ],
             ],
-            'constraints' => $notPasswordCompromised ?? [$passwordStrength],
+            'constraints' => $this->userManager->getPasswordConstraints(),
             'first_options' => [
                 'label' => 'Wachtwoord',
             ],
