@@ -15,5 +15,4 @@
     <route id="webstack_user_security_logout" path="/logout" methods="GET POST">
         <default key="_controller">webstack_user.security.controller:logout</default>
     </route>
-
 </routes>

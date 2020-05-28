@@ -120,7 +120,7 @@ class ResetPasswordController extends AbstractController
 
             $email = (new TemplatedEmail())
                 ->from(new Address($this->fromEmail['address'], $this->fromEmail['sender_name']))
-                ->to($user->getEmail())
+                ->to(new Address($user->getEmail(), $user->getLastName()))
                 ->subject('Wachtwoord resetten')
                 ->htmlTemplate('@WebstackUser/email/reset-password/confirm.html.twig')
                 ->context([
