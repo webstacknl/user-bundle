@@ -279,11 +279,12 @@ class UserManager
     }
 
     /**
-     * @return array|PasswordStrength[]
+     * @returnPasswordStrength[]
      */
     public function getPasswordConstraints()
     {
         $notPasswordCompromised = null;
+        
         $passwordStrength = new PasswordStrength([
             'minStrength' => $this->minStrength,
             'minLength' => $this->minLength
