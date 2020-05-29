@@ -68,11 +68,13 @@
 
         <service id="webstack_user.change_password.type" class="Webstack\UserBundle\Form\Type\ChangePasswordType" public="true">
             <argument type="service" id="Symfony\Component\Security\Core\Security" />
+            <argument type="service" id="webstack_user.user_manager" />
             <tag name="form.type"/>
         </service>
 
         <service id="webstack_user.reset_password.type" class="Webstack\UserBundle\Form\Type\ResetPasswordType" public="true">
             <argument type="service" id="Symfony\Component\Security\Core\Security" />
+            <argument type="service" id="webstack_user.user_manager" />
             <argument key="$userClass">%webstack_user.model.user.class%</argument>
             <tag name="form.type"/>
         </service>

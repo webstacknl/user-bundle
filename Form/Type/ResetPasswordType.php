@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
+use Webstack\UserBundle\Manager\UserManager;
 
 /**
  * Class ResetPasswordType
@@ -23,6 +24,11 @@ class ResetPasswordType extends AbstractType
     private $security;
 
     /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
      * @var string
      */
     private $userClass;
@@ -30,11 +36,13 @@ class ResetPasswordType extends AbstractType
     /**
      * ResetPasswordType constructor.
      * @param Security $security
+     * @param UserManager $userManager
      * @param string $userClass
      */
-    public function __construct(Security $security, string $userClass)
+    public function __construct(Security $security, UserManager $userManager, string $userClass)
     {
         $this->security = $security;
+        $this->userManager = $userManager;
         $this->userClass = $userClass;
     }
 
@@ -52,15 +60,7 @@ class ResetPasswordType extends AbstractType
                     'autocomplete' => 'new-password',
                 ],
             ],
-            'constraints' => [
-                new NotCompromisedPassword([
-                    'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
-                ]),
-                new PasswordStrength([
-                    'minStrength' => 4,
-                    'minLength' => 8
-                ])
-            ],
+            'constraints' => $this->userManager->getPasswordConstraints(),
             'first_options' => [
                 'label' => 'Wachtwoord',
             ],

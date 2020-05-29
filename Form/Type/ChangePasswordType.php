@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
+use Webstack\UserBundle\Manager\UserManager;
 
 /**
  * Class ChangePasswordType
@@ -25,12 +26,19 @@ class ChangePasswordType extends AbstractType
     private $security;
 
     /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
      * ChangePasswordType constructor.
      * @param Security $security
+     * @param UserManager $userManager
      */
-    public function __construct(Security $security)
+    public function __construct(Security $security, UserManager $userManager)
     {
         $this->security = $security;
+        $this->userManager = $userManager;
     }
 
     /**
@@ -49,7 +57,7 @@ class ChangePasswordType extends AbstractType
                     ]),
                     new UserPassword([
                         'message' => 'Uw huidig wachtwoord is niet juist.',
-                    ]),
+                    ])
                 ],
                 'attr' => [
                     'autocomplete' => 'current-password',
@@ -58,15 +66,7 @@ class ChangePasswordType extends AbstractType
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
-                'constraints' => [
-                    new NotCompromisedPassword([
-                        'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
-                    ]),
-                    new PasswordStrength([
-                        'minStrength' => 4,
-                        'minLength' => 8
-                    ])
-                ],
+                'constraints' => $this->userManager->getPasswordConstraints(),
                 'options' => [
                     'attr' => [
                         'autocomplete' => 'new-password',

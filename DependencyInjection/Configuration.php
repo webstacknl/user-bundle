@@ -37,6 +37,14 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('sender_name')->isRequired()->cannotBeEmpty()->end()
                     ->end()
                 ->end()
+                ->arrayNode('password')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('password_compromised')->defaultTrue()->end()
+                        ->scalarNode('min_strength')->defaultValue(4)->end()
+                        ->scalarNode('min_length')->defaultValue(8)->end()
+                    ->end()
+                ->end()
             ->end();
 
         $this->addRegistrationSection($rootNode);
@@ -86,7 +94,7 @@ class Configuration implements ConfigurationInterface
             ->end()
         ->end();
     }
-    
+
     /**
      * @param ArrayNodeDefinition $node
      */
