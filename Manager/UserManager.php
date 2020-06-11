@@ -2,11 +2,21 @@
 
 namespace Webstack\UserBundle\Manager;
 
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use Rollerworks\Component\PasswordStrength\Validator\Constraints\PasswordStrength;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Webstack\UserBundle\Model\User;
 use Webstack\UserBundle\Util\PasswordUpdaterInterface;
 
@@ -31,16 +41,58 @@ class UserManager
     private $parameterBag;
 
     /**
+     * @var TokenGeneratorInterface
+     */
+    private $tokenGenerator;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
+     * @var MailerInterface
+     */
+    private $mailer;
+
+    /**
+     * @var bool
+     */
+    private $passwordCompromised;
+
+    /**
+     * @var int
+     */
+    private $minLength;
+
+    /**
+     * @var int
+     */
+    private $minStrength;
+
+    /**
      * UserManager constructor.
      * @param PasswordUpdaterInterface $passwordUpdater
      * @param Registry $registry
      * @param ParameterBagInterface $parameterBag
+     * @param TokenGeneratorInterface $tokenGenerator
+     * @param RouterInterface $router
+     * @param MailerInterface $mailer
+     * @param bool $passwordCompromised
+     * @param int $minLength
+     * @param int $minStrength
      */
-    public function __construct(PasswordUpdaterInterface $passwordUpdater, Registry $registry, ParameterBagInterface $parameterBag)
+    public function __construct(PasswordUpdaterInterface $passwordUpdater, Registry $registry, ParameterBagInterface $parameterBag, TokenGeneratorInterface $tokenGenerator, RouterInterface $router, MailerInterface $mailer, bool $passwordCompromised, int $minLength, int $minStrength)
     {
         $this->passwordUpdater = $passwordUpdater;
         $this->entityManager = $registry->getManager();
         $this->parameterBag = $parameterBag;
+        $this->tokenGenerator = $tokenGenerator;
+        $this->router = $router;
+        $this->mailer = $mailer;
+        $this->passwordCompromised = $passwordCompromised;
+        $this->minLength = $minLength;
+        $this->minStrength = $minStrength;
     }
 
     /**
@@ -192,4 +244,63 @@ class UserManager
         $this->entityManager->remove($user);
         $this->entityManager->flush();
     }
+
+    /**
+     * @param User $user
+     * @throws TransportExceptionInterface
+     */
+    public function sendInvitation(User $user): void
+    {
+        if (null !== $user) {
+            $fromEmail = $this->parameterBag->get('webstack_user.registration.from_email');
+
+            if (null === $user->getConfirmationToken()) {
+                $user->setConfirmationToken($this->tokenGenerator->generateToken());
+            }
+
+            $user->setPasswordRequestedAt(new DateTime());
+
+            $this->entityManager->flush();
+
+            $email = (new TemplatedEmail())
+                ->from(new Address($fromEmail['address'], $fromEmail['sender_name']))
+                ->to(new Address($user->getEmail(), $user->getLastName()))
+                ->subject('Bevestig uw account')
+                ->htmlTemplate('@WebstackUser/email/invitation/index.html.twig')
+                ->context([
+                    'user' => $user,
+                    'confirmationUrl' => $this->router->generate('webstack_user_reset_password_reset', [
+                        'token' => $user->getConfirmationToken()
+                    ], UrlGeneratorInterface::ABSOLUTE_URL)
+                ]);
+
+            $this->mailer->send($email);
+        }
+    }
+
+    /**
+     * @returnPasswordStrength[]
+     */
+    public function getPasswordConstraints()
+    {
+        $notPasswordCompromised = null;
+        
+        $passwordStrength = new PasswordStrength([
+            'minStrength' => $this->minStrength,
+            'minLength' => $this->minLength
+        ]);
+
+        if ($this->passwordCompromised) {
+            $notPasswordCompromised = [
+                new NotCompromisedPassword([
+                    'message' => 'Het ingevulde wachtwoord kan niet worden gebruikt omdat deze voorkomt op een lijst met gelekte wachtwoorden.',
+                ]),
+                $passwordStrength
+            ];
+        }
+
+        return $notPasswordCompromised ?? [$passwordStrength];
+    }
+
+
 }

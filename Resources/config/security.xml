@@ -49,7 +49,37 @@
             <tag name="controller.service_arguments"/>
         </service>
 
+        <service id="webstack_user.profile.controller" class="Webstack\UserBundle\Controller\ProfileController" public="true">
+            <argument type="service" id="Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface" />
+            <tag name="controller.service_arguments"/>
+        </service>
+
+        <service id="webstack_user.reset_password.controller" class="Webstack\UserBundle\Controller\ResetPasswordController" public="true">
+            <argument type="service" id="webstack_user.user_manager" />
+            <argument type="service" id="security.csrf.token_generator" />
+            <argument type="service" id="Symfony\Component\Mailer\MailerInterface" />
+            <argument type="service" id="Symfony\Component\Routing\RouterInterface" />
+            <argument type="service" id="Symfony\Component\Security\Core\Security" />
+            <argument type="service" id="Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface" />
+            <argument key="$fromEmail">%webstack_user.registration.from_email%</argument>
+            <argument key="$userClass">%webstack_user.model.user.class%</argument>
+            <tag name="controller.service_arguments"/>
+        </service>
+
         <service id="webstack_user.change_password.type" class="Webstack\UserBundle\Form\Type\ChangePasswordType" public="true">
+            <argument type="service" id="Symfony\Component\Security\Core\Security" />
+            <argument type="service" id="webstack_user.user_manager" />
+            <tag name="form.type"/>
+        </service>
+
+        <service id="webstack_user.reset_password.type" class="Webstack\UserBundle\Form\Type\ResetPasswordType" public="true">
+            <argument type="service" id="Symfony\Component\Security\Core\Security" />
+            <argument type="service" id="webstack_user.user_manager" />
+            <argument key="$userClass">%webstack_user.model.user.class%</argument>
+            <tag name="form.type"/>
+        </service>
+
+        <service id="webstack_user.profile.type" class="Webstack\UserBundle\Form\Type\ProfileFormType" public="true">
             <argument type="service" id="Symfony\Component\Security\Core\Security" />
             <tag name="form.type"/>
         </service>

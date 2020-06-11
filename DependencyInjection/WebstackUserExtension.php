@@ -31,6 +31,12 @@ class WebstackUserExtension extends Extension
         $container->setParameter('webstack_user.model.user.class', $config['user_class']);
         $container->setParameter('webstack_user.model.user.class.email_as_username', $config['use_email_as_username']);
 
+        if (isset($config['password'])) {
+            $container->setParameter('webstack_user.security.password.password_compromised', $config['password']['password_compromised']);
+            $container->setParameter('webstack_user.security.password.min_strength', $config['password']['min_strength']);
+            $container->setParameter('webstack_user.security.password.min_length', $config['password']['min_length']);
+        }
+
         if (($config['registration']['enabled'])) {
             $this->loadRegistration($config['registration'], $container, $loader, $config['from_email']);
         }
@@ -56,7 +62,7 @@ class WebstackUserExtension extends Extension
             unset($config['confirmation']['from_email']);
         }
 
-        $container->setParameter('fos_user.registration.form.from_email', array($fromEmail['address'] => $fromEmail['sender_name']));
+        $container->setParameter('webstack_user.registration.from_email', $fromEmail);
     }
 
     /**
