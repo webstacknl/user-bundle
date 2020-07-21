@@ -54,7 +54,7 @@ class TwoFactorAuthenticationController extends AbstractController
         if ($request->isMethod('POST') && $this->googleAuthenticator->checkCode($this->getUser(), $request->get('code'))) {
             $this->getDoctrine()->getManager()->flush();
 
-            $this->addFlash('success', 'Two factor authenticatie geconfigureerd.');
+            $this->addFlash('success', 'Tweestapsverificatie geconfigureerd.');
 
             return $this->redirectToRoute('webstack_user_two_factor_authentication_index');
         }
