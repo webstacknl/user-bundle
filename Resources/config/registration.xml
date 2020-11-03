@@ -18,9 +18,13 @@
         </service>
 
         <service id="webstack_user.registration.controller" class="Webstack\UserBundle\Controller\RegistrationController" public="true">
+            <tag name="controller.service_arguments" />
             <argument type="service" id="webstack_user.registration.form.factory" />
             <argument type="service" id="webstack_user.user_manager" />
             <argument type="service" id="security.token_storage" />
+            <call method="setContainer">
+                <argument type="service" id="Psr\Container\ContainerInterface"/>
+            </call>
         </service>
     </services>
 
