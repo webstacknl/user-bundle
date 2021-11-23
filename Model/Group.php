@@ -2,6 +2,8 @@
 
 namespace Webstack\UserBundle\Model;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * Class Group
  */
