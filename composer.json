@@ -1,8 +1,7 @@
 {
   "name": "webstack/user-bundle",
   "type": "symfony-bundle",
-  "description": "Webstack UserBundle",
-  "keywords": ["User management"],
+  "description": "Webstack User Bundle",
   "license": "MIT",
   "authors": [
     {
@@ -10,31 +9,45 @@
       "email": "info@webstack.nl"
     }
   ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://packages.webstack.nl"
+    }
+  ],
   "require": {
-    "php": "^7.3",
-    "doctrine/doctrine-bundle": "^1.3|^2.1",
+    "php": "^7.4|^8.0",
+    "doctrine/doctrine-bundle": "^2.1",
     "doctrine/orm": "^2.10",
-    "gedmo/doctrine-extensions": "~2|~3",
-    "paragonie/random_compat": "^1|^2",
+    "gedmo/doctrine-extensions": "^3",
     "sensio/framework-extra-bundle": "^5.1",
     "symfony/flex": "^1.17|^2.0",
-    "symfony/form": "^4.4|^5.1",
-    "symfony/framework-bundle": "^4.4|^5.1",
-    "symfony/mailer": "^4.4|^5.1",
-    "symfony/proxy-manager-bridge": "^4.4|^5.1",
-    "symfony/security-bundle": "^4.4|^5.1",
-    "symfony/templating": "^4.4|^5.1",
-    "symfony/twig-bundle": "^4.4|^5.1",
-    "symfony/validator": "^4.4|^5.1",
-    "twig/twig": "^1.28|^2.0|^3.0"
+    "symfony/form": "^5.4",
+    "symfony/framework-bundle": "^5.4",
+    "symfony/mailer": "^5.4",
+    "symfony/security-bundle": "^5.4",
+    "symfony/templating": "^5.4",
+    "symfony/twig-bundle": "^5.4",
+    "symfony/validator": "^5.4",
+    "twig/twig": "^3.0"
   },
   "require-dev": {
-    "scheb/two-factor-bundle": "^4.14",
-    "symfony/console": "^4.4|^5.1",
-    "symfony/phpunit-bridge": "^4.4|^5.1",
-    "symfony/yaml": "^4.4|^5.1",
-    "roave/security-advisories": "dev-master",
-    "rollerworks/password-strength-bundle": "^2.1"
+    "friendsofphp/php-cs-fixer": "^3.3",
+    "phpstan/extension-installer": "^1.1",
+    "phpstan/phpstan": "^1.2",
+    "phpstan/phpstan-doctrine": "^1.0",
+    "phpstan/phpstan-symfony": "^1.0",
+    "phpunit/phpunit": "^9.5",
+    "roave/security-advisories": "dev-latest",
+    "rollerworks/password-strength-bundle": "^2.1",
+    "scheb/2fa-bundle": "^5.13",
+    "scheb/2fa-email": "^5.13",
+    "scheb/2fa-google-authenticator": "^5.13",
+    "symfony/console": "^5.4",
+    "symfony/event-dispatcher": "^5.4",
+    "symfony/phpunit-bridge": "^5.4",
+    "symfony/yaml": "^5.4",
+    "webstack/admin-bundle": "^3.0"
   },
   "suggest": {
     "scheb/two-factor-bundle": "",
@@ -42,11 +55,10 @@
   },
   "autoload": {
     "psr-4": {
-      "Webstack\\UserBundle\\": ""
+      "Webstack\\UserBundle\\": "src/"
     }
   },
   "config" : {
-    "sort-packages": true,
-    "lock": false
+    "sort-packages": true
   }
 }
