@@ -20,6 +20,9 @@
     "doctrine/doctrine-bundle": "^2.1",
     "doctrine/orm": "^2.10",
     "gedmo/doctrine-extensions": "^3",
+    "scheb/2fa-bundle": "^5.13",
+    "scheb/2fa-email": "^5.13",
+    "scheb/2fa-google-authenticator": "^5.13",
     "sensio/framework-extra-bundle": "^5.1",
     "symfony/flex": "^1.17|^2.0",
     "symfony/form": "^5.4",
@@ -40,9 +43,6 @@
     "phpunit/phpunit": "^9.5",
     "roave/security-advisories": "dev-latest",
     "rollerworks/password-strength-bundle": "^2.1",
-    "scheb/2fa-bundle": "^5.13",
-    "scheb/2fa-email": "^5.13",
-    "scheb/2fa-google-authenticator": "^5.13",
     "symfony/console": "^5.4",
     "symfony/event-dispatcher": "^5.4",
     "symfony/phpunit-bridge": "^5.4",
@@ -50,7 +50,6 @@
     "webstack/admin-bundle": "^3.0"
   },
   "suggest": {
-    "scheb/two-factor-bundle": "",
     "rollerworks/password-strength-bundle": ""
   },
   "autoload": {
