@@ -24,7 +24,6 @@
     "scheb/2fa-email": "^5.13",
     "scheb/2fa-google-authenticator": "^5.13",
     "sensio/framework-extra-bundle": "^5.1",
-    "symfony/flex": "^1.17|^2.0",
     "symfony/form": "^5.4",
     "symfony/framework-bundle": "^5.4",
     "symfony/mailer": "^5.4",
