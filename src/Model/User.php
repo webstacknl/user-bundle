@@ -42,9 +42,8 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", unique=true)
-     * @Assert\NotBlank()
      */
-    protected string $username = '';
+    protected ?string $username = null;
 
     /**
      * @ORM\Column(type="string")
@@ -166,7 +165,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->username;
     }
 
-    public function setUsername(string $username): void
+    public function setUsername(?string $username): void
     {
         $this->username = $username;
     }
