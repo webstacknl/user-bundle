@@ -13,7 +13,6 @@ use Scheb\TwoFactorBundle\Model\PreferredProviderInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 use Webstack\AdminBundle\Traits\PrimaryUuidTrait;
 use Webstack\AdminBundle\Traits\User\EmailTwoFactorTrait;
 use Webstack\AdminBundle\Traits\User\GoogleTwoFactorTrait;
@@ -46,9 +45,9 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     protected ?string $username = null;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
-    protected string $email = '';
+    protected ?string $email = null;
 
     /**
      * @ORM\Column(type="boolean")
@@ -175,7 +174,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function setEmail(string $email): void
+    public function setEmail(?string $email): void
     {
         $this->email = $email;
     }
