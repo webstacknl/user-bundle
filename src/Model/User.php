@@ -237,7 +237,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->confirmationToken;
     }
 
-    public function setConfirmationToken(string $confirmationToken): void
+    public function setConfirmationToken(?string $confirmationToken): void
     {
         $this->confirmationToken = $confirmationToken;
     }
