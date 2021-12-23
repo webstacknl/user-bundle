@@ -4,6 +4,8 @@ namespace Webstack\UserBundle\Manager;
 
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use Rollerworks\Component\PasswordStrength\Validator\Constraints\PasswordStrength;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -22,7 +24,7 @@ use Webstack\UserBundle\Util\PasswordUpdaterInterface;
 class UserManager
 {
     private PasswordUpdaterInterface $passwordUpdater;
-    private EntityManagerInterface $entityManager;
+    private ManagerRegistry $managerRegistry;
     private ParameterBagInterface $parameterBag;
     private TokenGeneratorInterface $tokenGenerator;
     private RouterInterface $router;
@@ -31,10 +33,10 @@ class UserManager
     private int $minLength;
     private int $minStrength;
 
-    public function __construct(PasswordUpdaterInterface $passwordUpdater, EntityManagerInterface $entityManager, ParameterBagInterface $parameterBag, TokenGeneratorInterface $tokenGenerator, RouterInterface $router, MailerInterface $mailer, bool $passwordCompromised, int $minLength, int $minStrength)
+    public function __construct(PasswordUpdaterInterface $passwordUpdater, ManagerRegistry $managerRegistry, ParameterBagInterface $parameterBag, TokenGeneratorInterface $tokenGenerator, RouterInterface $router, MailerInterface $mailer, bool $passwordCompromised, int $minLength, int $minStrength)
     {
         $this->passwordUpdater = $passwordUpdater;
-        $this->entityManager = $entityManager;
+        $this->managerRegistry = $managerRegistry;
         $this->parameterBag = $parameterBag;
         $this->tokenGenerator = $tokenGenerator;
         $this->router = $router;
@@ -54,11 +56,11 @@ class UserManager
     public function create(User $user, bool $persist = true, bool $andFlush = true): User
     {
         if (true === $persist) {
-            $this->entityManager->persist($user);
+            $this->getEntityManager()->persist($user);
         }
 
         if (true === $andFlush) {
-            $this->entityManager->flush();
+            $this->getEntityManager()->flush();
         }
 
         return $user;
@@ -78,7 +80,7 @@ class UserManager
             ];
         }
 
-        return $this->entityManager->getRepository($userEntity)->findOneBy($criteria);
+        return $this->getEntityManager()->getRepository($userEntity)->findOneBy($criteria);
     }
 
     public function getUserClass(): string
@@ -118,7 +120,7 @@ class UserManager
 
     protected function getRepository(): ObjectRepository
     {
-        return $this->entityManager->getRepository($this->getUserClass());
+        return $this->getEntityManager()->getRepository($this->getUserClass());
     }
 
     /**
@@ -131,7 +133,7 @@ class UserManager
 
     public function reloadUser(UserInterface $user): void
     {
-        $this->entityManager->refresh($user);
+        $this->getEntityManager()->refresh($user);
     }
 
     /**
@@ -147,17 +149,17 @@ class UserManager
             $user->setUsername($user->getEmail());
         }
 
-        $this->entityManager->persist($user);
+        $this->getEntityManager()->persist($user);
 
         if ($andFlush) {
-            $this->entityManager->flush();
+            $this->getEntityManager()->flush();
         }
     }
 
     public function deleteUser(UserInterface $user): void
     {
-        $this->entityManager->remove($user);
-        $this->entityManager->flush();
+        $this->getEntityManager()->remove($user);
+        $this->getEntityManager()->flush();
     }
 
     /**
@@ -173,7 +175,7 @@ class UserManager
 
         $user->setPasswordRequestedAt(new DateTime());
 
-        $this->entityManager->flush();
+        $this->getEntityManager()->flush();
 
         $email = (new TemplatedEmail())
             ->from(new Address($fromEmail['address'], $fromEmail['sender_name']))
@@ -212,5 +214,13 @@ class UserManager
         }
 
         return $notPasswordCompromised ?? [$passwordStrength];
+    }
+
+    /**
+     * @return EntityManagerInterface&ObjectManager
+     */
+    private function getEntityManager(): EntityManagerInterface
+    {
+        return $this->managerRegistry->getManager();
     }
 }
