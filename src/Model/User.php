@@ -135,7 +135,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->lastNamePrefix;
     }
 
-    public function setLastNamePrefix(string $lastNamePrefix): void
+    public function setLastNamePrefix(?string $lastNamePrefix): void
     {
         $this->lastNamePrefix = $lastNamePrefix;
     }
