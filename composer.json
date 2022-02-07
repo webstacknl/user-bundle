@@ -23,7 +23,7 @@
     "scheb/2fa-bundle": "^5.13",
     "scheb/2fa-email": "^5.13",
     "scheb/2fa-google-authenticator": "^5.13",
-    "sensio/framework-extra-bundle": "^5.1",
+    "sensio/framework-extra-bundle": "^5.5|^6.2",
     "symfony/form": "^5.4",
     "symfony/framework-bundle": "^5.4",
     "symfony/mailer": "^5.4",
@@ -57,6 +57,11 @@
     }
   },
   "config" : {
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "phpstan/extension-installer": true,
+      "endroid/installer": true,
+      "symfony/flex": true
+    }
   }
 }
