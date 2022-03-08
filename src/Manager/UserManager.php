@@ -3,10 +3,10 @@
 namespace Webstack\UserBundle\Manager;
 
 use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
+use DomainException;
 use Rollerworks\Component\PasswordStrength\Validator\Constraints\PasswordStrength;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -70,7 +70,7 @@ class UserManager
     {
         $userEntity = $this->getUserClass();
 
-        if (false !== strpos($emailOrUsername, '@')) {
+        if (str_contains($emailOrUsername, '@')) {
             $criteria = [
                 'email' => $emailOrUsername,
             ];
@@ -88,10 +88,7 @@ class UserManager
         return $this->parameterBag->get('webstack_user.model.user.class');
     }
 
-    /**
-     * @return object|User|null
-     */
-    public function findUserByConfirmationToken(string $token): ?object
+    public function findUserByConfirmationToken(string $token): ?User
     {
         return $this->findUserBy([
             'confirmationToken' => $token,
@@ -110,12 +107,16 @@ class UserManager
 
     /**
      * @param array<string, string> $criteria
-     *
-     * @return object|User|null
      */
-    public function findUserBy(array $criteria): ?object
+    public function findUserBy(array $criteria): ?User
     {
-        return $this->getRepository()->findOneBy($criteria);
+        $user = $this->getRepository()->findOneBy($criteria);
+
+        if (null === $user || $user instanceof User) {
+            return $user;
+        }
+
+        throw new DomainException();
     }
 
     protected function getRepository(): ObjectRepository
@@ -216,11 +217,8 @@ class UserManager
         return $notPasswordCompromised ?? [$passwordStrength];
     }
 
-    /**
-     * @return EntityManagerInterface&ObjectManager
-     */
-    private function getEntityManager(): EntityManagerInterface
+    private function getEntityManager(): ObjectManager
     {
-        return $this->managerRegistry->getManager();
+        return $this->managerRegistry->getManagerForClass($this->getUserClass());
     }
 }

@@ -98,9 +98,9 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     protected array $roles = ['ROLE_USER'];
 
     /**
-     * @var Collection<GroupInterface>
+     * @var Collection<GroupInterface>|null
      */
-    protected Collection $groups;
+    protected ?Collection $groups = null;
 
     /**
      * @ORM\Column(type="boolean")
@@ -297,7 +297,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
         return true;
     }
 
-    public function getRoles(bool $withGroups = true): ?array
+    public function getRoles(bool $withGroups = true): array
     {
         $roles = $this->roles;
 
@@ -309,7 +309,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
             }
         }
 
-        //guarantee every user at least has ROLE_USER
+        // Guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);

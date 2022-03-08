@@ -3,6 +3,8 @@
 namespace Webstack\UserBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use DomainException;
+use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Google\GoogleAuthenticatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,15 +20,11 @@ class TwoFactorAuthenticationController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
     private GoogleAuthenticatorInterface $googleAuthenticator;
-    private string $googleServerName;
-    private string $googleIssue;
 
-    public function __construct(EntityManagerInterface $entityManager, GoogleAuthenticatorInterface $googleAuthenticator, string $googleServerName, string $googleIssue)
+    public function __construct(EntityManagerInterface $entityManager, GoogleAuthenticatorInterface $googleAuthenticator)
     {
         $this->entityManager = $entityManager;
         $this->googleAuthenticator = $googleAuthenticator;
-        $this->googleServerName = $googleServerName;
-        $this->googleIssue = $googleIssue;
     }
 
     /**
@@ -36,29 +34,33 @@ class TwoFactorAuthenticationController extends AbstractController
      */
     public function index(Request $request)
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
 
         if (null === $user) {
             throw new AccessDeniedHttpException();
         }
 
-        $secret = $request->get('secret', $this->googleAuthenticator->generateSecret());
+        if ($user instanceof TwoFactorInterface) {
+            $secret = $request->get('secret', $this->googleAuthenticator->generateSecret());
 
-        $user->setGoogleAuthenticatorSecret($secret);
+            $user->setGoogleAuthenticatorSecret($secret);
 
-        if ($request->isMethod('POST') && $this->googleAuthenticator->checkCode($user, $request->get('code'))) {
-            $this->entityManager->flush();
+            if ($request->isMethod('POST') && $this->googleAuthenticator->checkCode($user, $request->get('code'))) {
+                $this->entityManager->flush();
 
-            $this->addFlash('success', 'Tweestapsverificatie geconfigureerd.');
+                $this->addFlash('success', 'Tweestapsverificatie geconfigureerd.');
 
-            return $this->redirectToRoute('webstack_user_two_factor_authentication_index');
+                return $this->redirectToRoute('webstack_user_two_factor_authentication_index');
+            }
+
+            return [
+                'secret' => $secret,
+                'qrContent' => $this->getQrContent($secret),
+            ];
         }
 
-        return [
-            'secret' => $secret,
-            'qrContent' => $this->getQrContent($secret),
-        ];
+        throw new DomainException();
     }
 
     private function getQrContent(string $secret): string

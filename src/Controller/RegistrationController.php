@@ -7,7 +7,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
+use Symfony\Component\Security\Core\Authentication\Token\RememberMeToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Webstack\UserBundle\Form\Factory\FactoryInterface;
 use Webstack\UserBundle\Manager\UserManager;
 
@@ -62,10 +65,18 @@ class RegistrationController extends AbstractController
 
     private function getTargetUrlFromSession(SessionInterface $session): ?string
     {
-        $key = sprintf('_security.%s.target_path', $this->tokenStorage->getToken()->getFirewallName());
+        $token = $this->tokenStorage->getToken();
 
-        if ($session->has($key)) {
-            return $session->get($key);
+        if (
+            $token instanceof PreAuthenticatedToken ||
+            $token instanceof RememberMeToken ||
+            $token instanceof UsernamePasswordToken
+        ) {
+            $key = sprintf('_security.%s.target_path', $token->getFirewallName());
+
+            if ($session->has($key)) {
+                return $session->get($key);
+            }
         }
 
         return null;

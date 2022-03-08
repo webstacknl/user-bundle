@@ -18,18 +18,23 @@ class UserProvider implements UserProviderInterface
         $this->userManager = $userManager;
     }
 
-    public function loadUserByUsername(string $username): UserInterface
+    public function loadUserByIdentifier(string $identifier): UserInterface
     {
-        $user = $this->findUser($username);
+        $user = $this->findUser($identifier);
 
         if (null === $user) {
             $exception = new UserNotFoundException();
-            $exception->setUserIdentifier($username);
+            $exception->setUserIdentifier($identifier);
 
             throw $exception;
         }
 
         return $user;
+    }
+
+    public function loadUserByUsername(string $username): UserInterface
+    {
+        return $this->loadUserByIdentifier($username);
     }
 
     /**
