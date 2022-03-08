@@ -45,8 +45,6 @@
             <tag name="controller.service_arguments"/>
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="scheb_two_factor.security.google_authenticator" on-invalid="null" />
-            <argument key="$googleServerName">%scheb_two_factor.google.server_name%</argument>
-            <argument key="$googleIssue">%scheb_two_factor.google.issuer%</argument>
             <call method="setContainer">
                 <argument type="service" id="Psr\Container\ContainerInterface"/>
             </call>

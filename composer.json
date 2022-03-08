@@ -20,9 +20,6 @@
     "doctrine/doctrine-bundle": "^2.1",
     "doctrine/orm": "^2.10",
     "gedmo/doctrine-extensions": "^3",
-    "scheb/2fa-bundle": "^5.13",
-    "scheb/2fa-email": "^5.13",
-    "scheb/2fa-google-authenticator": "^5.13",
     "sensio/framework-extra-bundle": "^5.5|^6.2",
     "symfony/form": "^5.4",
     "symfony/framework-bundle": "^5.4",
@@ -49,7 +46,10 @@
     "webstack/admin-bundle": "^3.0"
   },
   "suggest": {
-    "rollerworks/password-strength-bundle": ""
+    "rollerworks/password-strength-bundle": "",
+    "scheb/2fa-bundle": "",
+    "scheb/2fa-email": "",
+    "scheb/2fa-google-authenticator": ""
   },
   "autoload": {
     "psr-4": {

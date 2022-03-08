@@ -70,8 +70,8 @@ class TwoFactorAuthenticationController extends AbstractController
         }
 
         $username = $user->getGoogleAuthenticatorUsername();
-        $server = $this->googleServerName;
-        $issuer = $this->googleIssue;
+        $server = $this->getParameter('scheb_two_factor.google.server_name');
+        $issuer = $this->getParameter('scheb_two_factor.google.issuer');
 
         $userAndHost = rawurlencode($username).($server ? '@'.rawurlencode($server) : '');
 
