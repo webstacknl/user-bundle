@@ -3,10 +3,9 @@
 namespace Webstack\UserBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Webstack\UserBundle\Form\Type\ChangePasswordType;
@@ -26,12 +25,7 @@ class ChangePasswordController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @Template()
-     *
-     * @return array|RedirectResponse
-     */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $user = $this->getUser();
 
@@ -56,9 +50,9 @@ class ChangePasswordController extends AbstractController
             return $this->redirectToRoute('app_home_index');
         }
 
-        return [
+        return $this->render('change_password/index.html.twig', [
             'form' => $form->createView(),
-        ];
+        ]);
     }
 
     public static function getTitle(): string

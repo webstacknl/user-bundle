@@ -33,7 +33,7 @@ class LoginManager implements LoginManagerInterface
         $this->rememberMeHandler = $rememberMeHandler;
     }
 
-    final public function logInUser(string $firewallName, UserInterface $user, Response $response = null): void
+    final public function logInUser(string $firewallName, UserInterface $user, ?Response $response = null): void
     {
         $this->userChecker->checkPreAuth($user);
 

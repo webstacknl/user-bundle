@@ -2,12 +2,10 @@
 
 namespace Webstack\UserBundle\Util;
 
-use Exception;
-
 class TokenGenerator implements TokenGeneratorInterface
 {
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function generateToken(): string
     {

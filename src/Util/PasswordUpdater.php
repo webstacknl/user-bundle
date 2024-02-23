@@ -2,7 +2,6 @@
 
 namespace Webstack\UserBundle\Util;
 
-use Exception;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Webstack\UserBundle\Model\User;
@@ -19,7 +18,7 @@ class PasswordUpdater implements PasswordUpdaterInterface
     /**
      * @param UserInterface&User $user
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function hashPassword(UserInterface $user): void
     {

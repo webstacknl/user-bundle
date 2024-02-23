@@ -2,7 +2,6 @@
 
 namespace Webstack\UserBundle\DependencyInjection;
 
-use Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -11,7 +10,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 class WebstackUserExtension extends Extension
 {
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
@@ -33,13 +32,13 @@ class WebstackUserExtension extends Extension
             $container->setParameter('webstack_user.security.password.min_length', $config['password']['min_length']);
         }
 
-        if (($config['registration']['enabled'])) {
+        if ($config['registration']['enabled']) {
             $this->loadRegistration($config['registration'], $container, $loader, $config['from_email']);
         }
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function loadRegistration(array $config, ContainerBuilder $container, XmlFileLoader $loader, array $fromEmail): void
     {

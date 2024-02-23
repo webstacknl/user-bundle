@@ -2,7 +2,6 @@
 
 namespace Webstack\UserBundle\Form\Type;
 
-use DomainException;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -47,7 +46,7 @@ class ProfileFormType extends AbstractType
         $user = $this->security->getUser();
 
         if (null === $user) {
-            throw new DomainException();
+            throw new \DomainException();
         }
 
         $resolver->setDefaults([

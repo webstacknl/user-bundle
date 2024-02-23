@@ -23,6 +23,7 @@ abstract class Role
 
     /**
      * @var array<string>|null
+     *
      * @ORM\Column(type="array", nullable=true)
      */
     protected ?array $source = null;
