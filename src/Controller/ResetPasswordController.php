@@ -2,9 +2,7 @@
 
 namespace Webstack\UserBundle\Controller;
 
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -43,12 +41,9 @@ class ResetPasswordController extends AbstractController
         $this->userClass = $userClass;
     }
 
-    /**
-     * @Template()
-     */
-    public function request(): array
+    public function request(): Response
     {
-        return [];
+        return $this->render('reset_password/request.html.twig');
     }
 
     /**
@@ -65,7 +60,7 @@ class ResetPasswordController extends AbstractController
                 $user->setConfirmationToken($this->tokenGenerator->generateToken());
             }
 
-            $user->setPasswordRequestedAt(new DateTime());
+            $user->setPasswordRequestedAt(new \DateTime());
 
             $this->entityManager->flush();
 
@@ -102,12 +97,7 @@ class ResetPasswordController extends AbstractController
         ]);
     }
 
-    /**
-     * @Template()
-     *
-     * @return array|RedirectResponse
-     */
-    public function reset(Request $request, string $token)
+    public function reset(Request $request, string $token): Response
     {
         $user = $this->entityManager->getRepository($this->userClass)->findOneBy([
             'confirmationToken' => $token,
@@ -133,9 +123,9 @@ class ResetPasswordController extends AbstractController
             return $this->redirectToRoute('app_security_login');
         }
 
-        return [
+        return $this->render('reset_password/reset.html.twig', [
             'form' => $form->createView(),
             'token' => $token,
-        ];
+        ]);
     }
 }

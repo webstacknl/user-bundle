@@ -64,7 +64,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected ?DateTime $lastLogin = null;
+    protected ?\DateTime $lastLogin = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -74,7 +74,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected ?DateTime $passwordRequestedAt = null;
+    protected ?\DateTime $passwordRequestedAt = null;
 
     /**
      * @ORM\Column(type="boolean")
@@ -89,10 +89,11 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected ?DateTime $expiresAt = null;
+    protected ?\DateTime $expiresAt = null;
 
     /**
      * @var array<string>
+     *
      * @ORM\Column(type="array")
      */
     protected array $roles = ['ROLE_USER'];
@@ -110,7 +111,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected ?DateTime $credentialsExpireAt = null;
+    protected ?\DateTime $credentialsExpireAt = null;
 
     public function __construct()
     {
@@ -211,7 +212,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->password = null;
         $this->plainPassword = $plainPassword;
 
-        $this->updatedAt = new DateTime();
+        $this->updatedAt = new \DateTime();
     }
 
     public function eraseCredentials(): void
@@ -219,12 +220,12 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->plainPassword = '';
     }
 
-    public function getLastLogin(): ?DateTime
+    public function getLastLogin(): ?\DateTime
     {
         return $this->lastLogin;
     }
 
-    public function setLastLogin(?DateTime $time): void
+    public function setLastLogin(?\DateTime $time): void
     {
         $this->lastLogin = $time;
     }
@@ -239,12 +240,12 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->confirmationToken = $confirmationToken;
     }
 
-    public function getPasswordRequestedAt(): ?DateTime
+    public function getPasswordRequestedAt(): ?\DateTime
     {
         return $this->passwordRequestedAt;
     }
 
-    public function setPasswordRequestedAt(DateTime $date = null): void
+    public function setPasswordRequestedAt(?\DateTime $date = null): void
     {
         $this->passwordRequestedAt = $date;
     }
@@ -274,12 +275,12 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->expired = $expired;
     }
 
-    public function getExpiresAt(): ?DateTime
+    public function getExpiresAt(): ?\DateTime
     {
         return $this->expiresAt;
     }
 
-    public function setExpiresAt(DateTime $expiresAt): void
+    public function setExpiresAt(\DateTime $expiresAt): void
     {
         $this->expiresAt = $expiresAt;
     }
@@ -367,12 +368,12 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->credentialsExpired;
     }
 
-    public function setCredentialsExpireAt(DateTime $datetime): void
+    public function setCredentialsExpireAt(\DateTime $datetime): void
     {
         $this->credentialsExpireAt = $datetime;
     }
 
-    public function getCredentialsExpireAt(): ?DateTime
+    public function getCredentialsExpireAt(): ?\DateTime
     {
         return $this->credentialsExpireAt;
     }

@@ -68,9 +68,9 @@ class RegistrationController extends AbstractController
         $token = $this->tokenStorage->getToken();
 
         if (
-            $token instanceof PreAuthenticatedToken ||
-            $token instanceof RememberMeToken ||
-            $token instanceof UsernamePasswordToken
+            $token instanceof PreAuthenticatedToken
+            || $token instanceof RememberMeToken
+            || $token instanceof UsernamePasswordToken
         ) {
             $key = sprintf('_security.%s.target_path', $token->getFirewallName());
 

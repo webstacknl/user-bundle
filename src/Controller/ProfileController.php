@@ -3,10 +3,9 @@
 namespace Webstack\UserBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Webstack\UserBundle\Form\Type\ProfileFormType;
 
 class ProfileController extends AbstractController
@@ -18,22 +17,14 @@ class ProfileController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @Template()
-     */
-    public function index(): array
+    public function index(): Response
     {
-        return [
+        return $this->render('profile/index.html.twig', [
             'user' => $this->getUser(),
-        ];
+        ]);
     }
 
-    /**
-     * @Template()
-     *
-     * @return array|RedirectResponse
-     */
-    public function edit(Request $request)
+    public function edit(Request $request): Response
     {
         $user = $this->getUser();
 
@@ -48,8 +39,8 @@ class ProfileController extends AbstractController
             return $this->redirectToRoute('webstack_user_profile_index');
         }
 
-        return [
+        return $this->render('profile/edit.html.twig', [
             'form' => $form->createView(),
-        ];
+        ]);
     }
 }

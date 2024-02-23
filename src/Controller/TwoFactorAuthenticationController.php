@@ -3,13 +3,11 @@
 namespace Webstack\UserBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use DomainException;
 use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Google\GoogleAuthenticatorInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Webstack\UserBundle\Model\User;
 
@@ -27,12 +25,7 @@ class TwoFactorAuthenticationController extends AbstractController
         $this->googleAuthenticator = $googleAuthenticator;
     }
 
-    /**
-     * @Template()
-     *
-     * @return array|RedirectResponse
-     */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         /** @var User|null $user */
         $user = $this->getUser();
@@ -54,13 +47,13 @@ class TwoFactorAuthenticationController extends AbstractController
                 return $this->redirectToRoute('webstack_user_two_factor_authentication_index');
             }
 
-            return [
+            return $this->render('two_factor_authentication/index.html.twig', [
                 'secret' => $secret,
                 'qrContent' => $this->getQrContent($secret),
-            ];
+            ]);
         }
 
-        throw new DomainException();
+        throw new \DomainException();
     }
 
     private function getQrContent(string $secret): string

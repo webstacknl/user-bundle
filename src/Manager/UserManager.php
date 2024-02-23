@@ -2,11 +2,9 @@
 
 namespace Webstack\UserBundle\Manager;
 
-use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
-use DomainException;
 use Rollerworks\Component\PasswordStrength\Validator\Constraints\PasswordStrength;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -116,7 +114,7 @@ class UserManager
             return $user;
         }
 
-        throw new DomainException();
+        throw new \DomainException();
     }
 
     protected function getRepository(): ObjectRepository
@@ -174,7 +172,7 @@ class UserManager
             $user->setConfirmationToken($this->tokenGenerator->generateToken());
         }
 
-        $user->setPasswordRequestedAt(new DateTime());
+        $user->setPasswordRequestedAt(new \DateTime());
 
         $this->getEntityManager()->flush();
 

@@ -7,5 +7,5 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 interface LoginManagerInterface
 {
-    public function logInUser(string $firewallName, UserInterface $user, Response $response = null): void;
+    public function logInUser(string $firewallName, UserInterface $user, ?Response $response = null): void;
 }
