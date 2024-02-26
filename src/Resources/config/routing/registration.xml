@@ -5,10 +5,10 @@
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
     <route id="webstack_user_registration_register" path="/" methods="GET POST">
-        <default key="_controller">webstack_user.registration.controller:register</default>
+        <default key="_controller">webstack_user.registration.controller::register</default>
     </route>
 
     <route id="webstack_user_registration_confirmed" path="/confirmed" methods="GET">
-        <default key="_controller">webstack_user.registration.controller:confirmed</default>
+        <default key="_controller">webstack_user.registration.controller::confirmed</default>
     </route>
 </routes>

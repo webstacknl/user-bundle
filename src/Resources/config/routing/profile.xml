@@ -5,10 +5,10 @@
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
     <route id="webstack_user_profile_index" path="/" methods="GET POST">
-        <default key="_controller">webstack_user.profile.controller:index</default>
+        <default key="_controller">webstack_user.profile.controller::index</default>
     </route>
 
     <route id="webstack_user_profile_edit" path="/wijzigen" methods="GET POST">
-        <default key="_controller">webstack_user.profile.controller:edit</default>
+        <default key="_controller">webstack_user.profile.controller::edit</default>
     </route>
 </routes>
