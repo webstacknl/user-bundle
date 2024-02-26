@@ -19,7 +19,7 @@ class ProfileController extends AbstractController
 
     public function index(): Response
     {
-        return $this->render('profile/index.html.twig', [
+        return $this->render('@WebstackUser/profile/index.html.twig', [
             'user' => $this->getUser(),
         ]);
     }
@@ -39,7 +39,7 @@ class ProfileController extends AbstractController
             return $this->redirectToRoute('webstack_user_profile_index');
         }
 
-        return $this->render('profile/edit.html.twig', [
+        return $this->render('@WebstackUser/profile/edit.html.twig', [
             'form' => $form->createView(),
         ]);
     }

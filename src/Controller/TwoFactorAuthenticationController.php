@@ -47,7 +47,7 @@ class TwoFactorAuthenticationController extends AbstractController
                 return $this->redirectToRoute('webstack_user_two_factor_authentication_index');
             }
 
-            return $this->render('two_factor_authentication/index.html.twig', [
+            return $this->render('@WebstackUser/two_factor_authentication/index.html.twig', [
                 'secret' => $secret,
                 'qrContent' => $this->getQrContent($secret),
             ]);

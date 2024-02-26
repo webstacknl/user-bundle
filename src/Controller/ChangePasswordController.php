@@ -50,7 +50,7 @@ class ChangePasswordController extends AbstractController
             return $this->redirectToRoute('app_home_index');
         }
 
-        return $this->render('change_password/index.html.twig', [
+        return $this->render('@WebstackUser/change_password/index.html.twig', [
             'form' => $form->createView(),
         ]);
     }

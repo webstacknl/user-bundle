@@ -43,7 +43,7 @@ class ResetPasswordController extends AbstractController
 
     public function request(): Response
     {
-        return $this->render('reset_password/request.html.twig');
+        return $this->render('@WebstackUser/reset_password/request.html.twig');
     }
 
     /**
@@ -123,7 +123,7 @@ class ResetPasswordController extends AbstractController
             return $this->redirectToRoute('app_security_login');
         }
 
-        return $this->render('reset_password/reset.html.twig', [
+        return $this->render('@WebstackUser/reset_password/reset.html.twig', [
             'form' => $form->createView(),
             'token' => $token,
         ]);
