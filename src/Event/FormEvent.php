@@ -9,14 +9,12 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class FormEvent extends Event
 {
-    private FormInterface $form;
-    private Request $request;
     private Response $response;
 
-    public function __construct(FormInterface $form, Request $request)
-    {
-        $this->form = $form;
-        $this->request = $request;
+    public function __construct(
+        private readonly FormInterface $form,
+        private readonly Request $request,
+    ) {
     }
 
     public function getForm(): FormInterface

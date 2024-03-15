@@ -2,9 +2,9 @@
 
 namespace Webstack\UserBundle\Model;
 
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\EquatableInterface;
@@ -21,39 +21,25 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     use GoogleTwoFactorTrait;
     use EmailTwoFactorTrait;
 
-    /**
-     * @ORM\Column(type="string", length=40, nullable=true)
-     */
+    #[ORM\Column(length: 40, nullable: true)]
     protected ?string $firstName = null;
 
-    /**
-     * @ORM\Column(type="string", length=20, nullable=true)
-     */
+    #[ORM\Column(length: 20, nullable: true)]
     protected ?string $lastNamePrefix = null;
 
-    /**
-     * @ORM\Column(type="string", length=40, nullable=true)
-     */
+    #[ORM\Column(length: 40, nullable: true)]
     protected ?string $lastName = null;
 
-    /**
-     * @ORM\Column(type="string", unique=true)
-     */
-    protected ?string $username = null;
+    #[ORM\Column(unique: true)]
+    protected string $username = '';
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    protected ?string $email = null;
+    #[ORM\Column]
+    protected string $email;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: Types::BOOLEAN)]
     protected bool $enabled = true;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     protected ?string $password = null;
 
     /**
@@ -61,56 +47,39 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     protected string $plainPassword = '';
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $lastLogin = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     protected ?string $confirmationToken = null;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $passwordRequestedAt = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: Types::BOOLEAN)]
     protected bool $locked = false;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: Types::BOOLEAN)]
     protected bool $expired = false;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $expiresAt = null;
 
     /**
-     * @var array<string>
-     *
-     * @ORM\Column(type="array")
+     * @var list<string>
      */
+    #[ORM\Column(type: Types::ARRAY)]
     protected array $roles = ['ROLE_USER'];
 
     /**
-     * @var Collection<GroupInterface>|null
+     * @var Collection<GroupInterface>
      */
-    protected ?Collection $groups = null;
+    protected Collection $groups;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: Types::BOOLEAN)]
     protected bool $credentialsExpired = false;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $credentialsExpireAt = null;
 
     public function __construct()
@@ -157,22 +126,22 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
         return implode(' ', array_filter([$this->firstName, $this->lastNamePrefix, $this->lastName]));
     }
 
-    public function getUsername(): ?string
+    public function getUserIdentifier(): string
     {
         return $this->username;
     }
 
-    public function setUsername(?string $username): void
+    public function setUsername(string $username): void
     {
         $this->username = $username;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function setEmail(?string $email): void
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }
@@ -317,7 +286,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @param array<string> $roles
+     * @param list<string> $roles
      */
     public function setRoles(array $roles): void
     {
@@ -435,7 +404,7 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
             return false;
         }
 
-        if ($this->username !== $user->getUsername()) {
+        if ($this->username !== $user->getUserIdentifier()) {
             return false;
         }
 

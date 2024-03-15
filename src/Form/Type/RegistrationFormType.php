@@ -11,11 +11,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RegistrationFormType extends AbstractType
 {
-    private string $class;
-
-    public function __construct(string $class)
-    {
-        $this->class = $class;
+    public function __construct(
+        private readonly string $class,
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

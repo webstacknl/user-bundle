@@ -12,13 +12,10 @@ use Webstack\UserBundle\Manager\UserManager;
 
 class ResetPasswordType extends AbstractType
 {
-    private UserManager $userManager;
-    private string $userClass;
-
-    public function __construct(UserManager $userManager, string $userClass)
-    {
-        $this->userManager = $userManager;
-        $this->userClass = $userClass;
+    public function __construct(
+        private readonly UserManager $userManager,
+        private readonly string $userClass,
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

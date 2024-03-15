@@ -11,26 +11,15 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\RememberMe\RememberMeHandlerInterface;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
 
-class LoginManager implements LoginManagerInterface
+readonly class LoginManager implements LoginManagerInterface
 {
-    private TokenStorageInterface $tokenStorage;
-    private UserCheckerInterface $userChecker;
-    private SessionAuthenticationStrategyInterface $sessionStrategy;
-    private RequestStack $requestStack;
-    private ?RememberMeHandlerInterface $rememberMeHandler;
-
     public function __construct(
-        TokenStorageInterface $tokenStorage,
-        UserCheckerInterface $userChecker,
-        SessionAuthenticationStrategyInterface $sessionStrategy,
-        RequestStack $requestStack,
-        RememberMeHandlerInterface $rememberMeHandler
+        private TokenStorageInterface $tokenStorage,
+        private UserCheckerInterface $userChecker,
+        private SessionAuthenticationStrategyInterface $sessionStrategy,
+        private RequestStack $requestStack,
+        private RememberMeHandlerInterface $rememberMeHandler,
     ) {
-        $this->tokenStorage = $tokenStorage;
-        $this->userChecker = $userChecker;
-        $this->sessionStrategy = $sessionStrategy;
-        $this->requestStack = $requestStack;
-        $this->rememberMeHandler = $rememberMeHandler;
     }
 
     final public function logInUser(string $firewallName, UserInterface $user, ?Response $response = null): void

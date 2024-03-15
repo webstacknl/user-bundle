@@ -4,20 +4,19 @@ namespace Webstack\UserBundle\Form\Factory;
 
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormTypeInterface;
 
-class FormFactory implements FactoryInterface
+readonly class FormFactory implements FactoryInterface
 {
-    private FormFactoryInterface $formFactory;
-    private string $name;
-    private string $type;
-    private array $validationGroups;
-
-    public function __construct(FormFactoryInterface $formFactory, string $name, string $type, array $validationGroups = [])
-    {
-        $this->formFactory = $formFactory;
-        $this->name = $name;
-        $this->type = $type;
-        $this->validationGroups = $validationGroups;
+    /**
+     * @param class-string<FormTypeInterface> $type
+     */
+    public function __construct(
+        private FormFactoryInterface $formFactory,
+        private string $name,
+        private string $type,
+        private array $validationGroups = [],
+    ) {
     }
 
     public function createForm(array $options = []): FormInterface

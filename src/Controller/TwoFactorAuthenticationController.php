@@ -16,13 +16,10 @@ use Webstack\UserBundle\Model\User;
  */
 class TwoFactorAuthenticationController extends AbstractController
 {
-    private EntityManagerInterface $entityManager;
-    private GoogleAuthenticatorInterface $googleAuthenticator;
-
-    public function __construct(EntityManagerInterface $entityManager, GoogleAuthenticatorInterface $googleAuthenticator)
-    {
-        $this->entityManager = $entityManager;
-        $this->googleAuthenticator = $googleAuthenticator;
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly GoogleAuthenticatorInterface $googleAuthenticator,
+    ) {
     }
 
     public function index(Request $request): Response
@@ -35,11 +32,11 @@ class TwoFactorAuthenticationController extends AbstractController
         }
 
         if ($user instanceof TwoFactorInterface) {
-            $secret = $request->get('secret', $this->googleAuthenticator->generateSecret());
+            $secret = $request->request->getString('secret', $this->googleAuthenticator->generateSecret());
 
             $user->setGoogleAuthenticatorSecret($secret);
 
-            if ($request->isMethod('POST') && $this->googleAuthenticator->checkCode($user, $request->get('code'))) {
+            if ($request->isMethod('POST') && $this->googleAuthenticator->checkCode($user, $request->request->getString('code'))) {
                 $this->entityManager->flush();
 
                 $this->addFlash('success', 'Tweestapsverificatie geconfigureerd.');
@@ -65,7 +62,11 @@ class TwoFactorAuthenticationController extends AbstractController
         }
 
         $username = $user->getGoogleAuthenticatorUsername();
+
+        /** @var string $server */
         $server = $this->getParameter('scheb_two_factor.google.server_name');
+
+        /** @var string $issuer */
         $issuer = $this->getParameter('scheb_two_factor.google.issuer');
 
         $userAndHost = rawurlencode($username).($server ? '@'.rawurlencode($server) : '');

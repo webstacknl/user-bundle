@@ -1,7 +1,8 @@
 parameters:
-	level: 5
+	level: 9
 	paths:
 		- src
 	parallel:
 		processTimeout: 300.0
+	checkMissingIterableValueType: false
 	checkGenericClassInNonGenericObjectType: false

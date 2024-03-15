@@ -11,7 +11,7 @@ interface GroupInterface
     public function hasRole(string $role): bool;
 
     /**
-     * @return array<string>
+     * @return list<string>
      */
     public function getRoles(): array;
 
@@ -20,7 +20,7 @@ interface GroupInterface
     public function setName(string $name): void;
 
     /**
-     * @param array<string> $roles
+     * @param list<string> $roles
      */
     public function setRoles(array $roles): void;
 }

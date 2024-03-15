@@ -2,8 +2,8 @@
 
 namespace Webstack\UserBundle\Manager;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use Rollerworks\Component\PasswordStrength\Validator\Constraints\PasswordStrength;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -15,37 +15,29 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
+use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Webstack\UserBundle\Model\User;
 use Webstack\UserBundle\Util\PasswordUpdaterInterface;
 
 class UserManager
 {
-    private PasswordUpdaterInterface $passwordUpdater;
-    private ManagerRegistry $managerRegistry;
-    private ParameterBagInterface $parameterBag;
-    private TokenGeneratorInterface $tokenGenerator;
-    private RouterInterface $router;
-    private MailerInterface $mailer;
-    private bool $passwordCompromised;
-    private int $minLength;
-    private int $minStrength;
-
-    public function __construct(PasswordUpdaterInterface $passwordUpdater, ManagerRegistry $managerRegistry, ParameterBagInterface $parameterBag, TokenGeneratorInterface $tokenGenerator, RouterInterface $router, MailerInterface $mailer, bool $passwordCompromised, int $minLength, int $minStrength)
-    {
-        $this->passwordUpdater = $passwordUpdater;
-        $this->managerRegistry = $managerRegistry;
-        $this->parameterBag = $parameterBag;
-        $this->tokenGenerator = $tokenGenerator;
-        $this->router = $router;
-        $this->mailer = $mailer;
-        $this->passwordCompromised = $passwordCompromised;
-        $this->minLength = $minLength;
-        $this->minStrength = $minStrength;
+    public function __construct(
+        private readonly PasswordUpdaterInterface $passwordUpdater,
+        private readonly ManagerRegistry $managerRegistry,
+        private readonly ParameterBagInterface $parameterBag,
+        private readonly TokenGeneratorInterface $tokenGenerator,
+        private readonly RouterInterface $router,
+        private readonly MailerInterface $mailer,
+        private readonly bool $passwordCompromised,
+        private readonly int $minLength,
+        private readonly int $minStrength,
+    ) {
     }
 
     public function createUser(): User
     {
+        /** @var User $class */
         $class = $this->getUserClass();
 
         return new $class();
@@ -78,12 +70,21 @@ class UserManager
             ];
         }
 
-        return $this->getEntityManager()->getRepository($userEntity)->findOneBy($criteria);
+        /** @var User|null $user */
+        $user = $this->getEntityManager()->getRepository($userEntity)->findOneBy($criteria);
+
+        return $user;
     }
 
+    /**
+     * @return class-string
+     */
     public function getUserClass(): string
     {
-        return $this->parameterBag->get('webstack_user.model.user.class');
+        /** @var class-string $class */
+        $class = $this->parameterBag->get('webstack_user.model.user.class');
+
+        return $class;
     }
 
     public function findUserByConfirmationToken(string $token): ?User
@@ -104,7 +105,7 @@ class UserManager
     }
 
     /**
-     * @param array<string, string> $criteria
+     * @param array<string, mixed> $criteria
      */
     public function findUserBy(array $criteria): ?User
     {
@@ -123,11 +124,14 @@ class UserManager
     }
 
     /**
-     * @return array<User>
+     * @return list<User>
      */
     public function findUsers(): array
     {
-        return $this->getRepository()->findAll();
+        /** @var list<User> $users */
+        $users = $this->getRepository()->findAll();
+
+        return $users;
     }
 
     public function reloadUser(UserInterface $user): void
@@ -166,6 +170,7 @@ class UserManager
      */
     public function sendInvitation(User $user): void
     {
+        /** @var array{address: string, sender_name: string} $fromEmail */
         $fromEmail = $this->parameterBag->get('webstack_user.registration.from_email');
 
         if (null === $user->getConfirmationToken()) {
@@ -178,7 +183,7 @@ class UserManager
 
         $email = (new TemplatedEmail())
             ->from(new Address($fromEmail['address'], $fromEmail['sender_name']))
-            ->to(new Address($user->getEmail(), $user->getLastName()))
+            ->to(new Address($user->getEmail(), (string) $user->getLastName()))
             ->subject('Bevestig uw account')
             ->htmlTemplate('@WebstackUser/email/invitation/index.html.twig')
             ->context([
@@ -192,7 +197,7 @@ class UserManager
     }
 
     /**
-     * @return array<PasswordStrength>
+     * @return array<Constraint>
      */
     public function getPasswordConstraints(): array
     {
@@ -215,8 +220,11 @@ class UserManager
         return $notPasswordCompromised ?? [$passwordStrength];
     }
 
-    private function getEntityManager(): ObjectManager
+    private function getEntityManager(): EntityManagerInterface
     {
-        return $this->managerRegistry->getManagerForClass($this->getUserClass());
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $this->managerRegistry->getManagerForClass($this->getUserClass());
+
+        return $entityManager;
     }
 }

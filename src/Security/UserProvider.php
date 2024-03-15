@@ -11,11 +11,9 @@ use Webstack\UserBundle\Model\User;
 
 class UserProvider implements UserProviderInterface
 {
-    protected UserManager $userManager;
-
-    public function __construct(UserManager $userManager)
-    {
-        $this->userManager = $userManager;
+    public function __construct(
+        protected readonly UserManager $userManager,
+    ) {
     }
 
     public function loadUserByIdentifier(string $identifier): UserInterface
@@ -38,12 +36,12 @@ class UserProvider implements UserProviderInterface
     }
 
     /**
-     * @param UserInterface&User $user
+     * @param User $user
      */
-    public function refreshUser(UserInterface $user): UserInterface
+    public function refreshUser(UserInterface $user): ?User
     {
-        if (false === $this->supportsClass(get_class($user))) {
-            throw new UnsupportedUserException(sprintf('Expected an instance of %s, but got "%s".', $this->userManager->getUserClass(), get_class($user)));
+        if (false === $this->supportsClass($user::class)) {
+            throw new UnsupportedUserException(sprintf('Expected an instance of %s, but got "%s".', $this->userManager->getUserClass(), $user::class));
         }
 
         return $this->userManager->findUserBy([

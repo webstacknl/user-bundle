@@ -2,25 +2,21 @@
 
 namespace Webstack\UserBundle\Model;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 abstract class Group implements GroupInterface
 {
-    /**
-     * @ORM\Column(type="string", length=60, unique=true)
-     */
+    #[ORM\Column(length: 60, unique: true)]
     protected string $name = '';
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     protected ?string $description = null;
 
     /**
-     * @var array<string>
-     *
-     * @ORM\Column(type="array")
+     * @var list<string>
      */
+    #[ORM\Column(type: Types::JSON)]
     protected array $roles = [];
 
     public function addRole(string $role): void

@@ -17,28 +17,23 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Webstack\UserBundle\Form\Type\ResetPasswordType;
 use Webstack\UserBundle\Manager\UserManager;
+use Webstack\UserBundle\Model\User;
 
 class ResetPasswordController extends AbstractController
 {
-    private EntityManagerInterface $entityManager;
-    private TokenGeneratorInterface $tokenGenerator;
-    private UserManager $userManager;
-    private MailerInterface $mailer;
-    private RouterInterface $router;
-    private PasswordHasherFactoryInterface $passwordHasherFactory;
-    private array $fromEmail;
-    private string $userClass;
-
-    public function __construct(EntityManagerInterface $entityManager, UserManager $userManager, TokenGeneratorInterface $tokenGenerator, MailerInterface $mailer, RouterInterface $router, PasswordHasherFactoryInterface $passwordHasherFactory, array $fromEmail, string $userClass)
-    {
-        $this->entityManager = $entityManager;
-        $this->tokenGenerator = $tokenGenerator;
-        $this->userManager = $userManager;
-        $this->mailer = $mailer;
-        $this->router = $router;
-        $this->passwordHasherFactory = $passwordHasherFactory;
-        $this->fromEmail = $fromEmail;
-        $this->userClass = $userClass;
+    /**
+     * @param class-string $userClass
+     */
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly UserManager $userManager,
+        private readonly TokenGeneratorInterface $tokenGenerator,
+        private readonly MailerInterface $mailer,
+        private readonly RouterInterface $router,
+        private readonly PasswordHasherFactoryInterface $passwordHasherFactory,
+        private readonly array $fromEmail,
+        private readonly string $userClass,
+    ) {
     }
 
     public function request(): Response
@@ -51,6 +46,7 @@ class ResetPasswordController extends AbstractController
      */
     public function sendEmail(Request $request): Response
     {
+        /** @var string $username */
         $username = $request->request->get('username');
 
         $user = $this->userManager->findUser($username);
@@ -66,7 +62,7 @@ class ResetPasswordController extends AbstractController
 
             $email = (new TemplatedEmail())
                 ->from(new Address($this->fromEmail['address'], $this->fromEmail['sender_name']))
-                ->to(new Address($user->getEmail(), $user->getLastName()))
+                ->to(new Address($user->getEmail(), (string) $user->getLastName()))
                 ->subject('Wachtwoord resetten')
                 ->htmlTemplate('@WebstackUser/email/reset-password/confirm.html.twig')
                 ->context([
@@ -99,6 +95,7 @@ class ResetPasswordController extends AbstractController
 
     public function reset(Request $request, string $token): Response
     {
+        /** @var User|null $user */
         $user = $this->entityManager->getRepository($this->userClass)->findOneBy([
             'confirmationToken' => $token,
         ]);
@@ -108,12 +105,15 @@ class ResetPasswordController extends AbstractController
         }
 
         $form = $this->createForm(ResetPasswordType::class, $user);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $passwordHasher = $this->passwordHasherFactory->getPasswordHasher($user);
-            $password = $passwordHasher->hash($form->get('password')->getData());
+
+            /** @var string $plainPassword */
+            $plainPassword = $form->get('password')->getData();
+
+            $password = $passwordHasher->hash($plainPassword);
 
             $user->setPassword($password);
             $user->setConfirmationToken(null);
@@ -124,7 +124,7 @@ class ResetPasswordController extends AbstractController
         }
 
         return $this->render('@WebstackUser/reset_password/reset.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
             'token' => $token,
         ]);
     }

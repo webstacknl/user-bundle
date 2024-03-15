@@ -16,13 +16,10 @@ use Webstack\UserBundle\Model\User;
  */
 class ChangePasswordController extends AbstractController
 {
-    private PasswordHasherFactoryInterface $encoderFactory;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(PasswordHasherFactoryInterface $encoderFactory, EntityManagerInterface $entityManager)
-    {
-        $this->encoderFactory = $encoderFactory;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private readonly PasswordHasherFactoryInterface $encoderFactory,
+        private readonly EntityManagerInterface $entityManager,
+    ) {
     }
 
     public function index(Request $request): Response
@@ -39,7 +36,10 @@ class ChangePasswordController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $passwordHasher = $this->encoderFactory->getPasswordHasher($user);
 
-            $password = $passwordHasher->hash($form->get('password')->getData());
+            /** @var string $plainPassword */
+            $plainPassword = $form->get('password')->getData();
+
+            $password = $passwordHasher->hash($plainPassword);
 
             $user->setPassword($password);
 
@@ -51,7 +51,7 @@ class ChangePasswordController extends AbstractController
         }
 
         return $this->render('@WebstackUser/change_password/index.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 

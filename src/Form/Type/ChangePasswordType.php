@@ -2,26 +2,23 @@
 
 namespace Webstack\UserBundle\Form\Type;
 
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Webstack\UserBundle\Manager\UserManager;
 
 class ChangePasswordType extends AbstractType
 {
-    private Security $security;
-    private UserManager $userManager;
-
-    public function __construct(Security $security, UserManager $userManager)
-    {
-        $this->security = $security;
-        $this->userManager = $userManager;
+    public function __construct(
+        private readonly Security $security,
+        private readonly UserManager $userManager,
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -73,7 +70,7 @@ class ChangePasswordType extends AbstractType
         }
 
         $resolver->setDefaults([
-            'data_class' => get_class($user),
+            'data_class' => $user::class,
         ]);
     }
 }

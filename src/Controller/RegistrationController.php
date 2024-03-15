@@ -16,23 +16,17 @@ use Webstack\UserBundle\Manager\UserManager;
 
 class RegistrationController extends AbstractController
 {
-    private FactoryInterface $formFactory;
-    private UserManager $userManager;
-    private TokenStorageInterface $tokenStorage;
-
     public function __construct(
-        FactoryInterface $formFactory,
-        UserManager $userManager,
-        TokenStorageInterface $tokenStorage
+        private readonly FactoryInterface $formFactory,
+        private readonly UserManager $userManager,
+        private readonly TokenStorageInterface $tokenStorage,
     ) {
-        $this->formFactory = $formFactory;
-        $this->userManager = $userManager;
-        $this->tokenStorage = $tokenStorage;
     }
 
     public function register(Request $request): Response
     {
         $user = $this->userManager->createUser();
+
         $form = $this->formFactory->createForm();
         $form->setData($user);
 
@@ -45,7 +39,7 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('@WebstackUser/Registration/register.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 
@@ -67,15 +61,14 @@ class RegistrationController extends AbstractController
     {
         $token = $this->tokenStorage->getToken();
 
-        if (
-            $token instanceof PreAuthenticatedToken
-            || $token instanceof RememberMeToken
-            || $token instanceof UsernamePasswordToken
-        ) {
+        if ($token instanceof PreAuthenticatedToken || $token instanceof RememberMeToken || $token instanceof UsernamePasswordToken) {
             $key = sprintf('_security.%s.target_path', $token->getFirewallName());
 
             if ($session->has($key)) {
-                return $session->get($key);
+                /** @var string $targetPath */
+                $targetPath = $session->get($key);
+
+                return $$targetPath;
             }
         }
 

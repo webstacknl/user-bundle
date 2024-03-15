@@ -10,11 +10,9 @@ use Webstack\UserBundle\Form\Type\ProfileFormType;
 
 class ProfileController extends AbstractController
 {
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+    ) {
     }
 
     public function index(): Response
@@ -40,7 +38,7 @@ class ProfileController extends AbstractController
         }
 
         return $this->render('@WebstackUser/profile/edit.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 }

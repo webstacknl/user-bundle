@@ -8,13 +8,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class FilterUserResponseEvent extends UserEvent
 {
-    private Response $response;
-
-    public function __construct(UserInterface $user, Request $request, Response $response)
+    public function __construct(UserInterface $user, Request $request, private Response $response)
     {
         parent::__construct($user, $request);
-
-        $this->response = $response;
     }
 
     public function getResponse(): Response

@@ -2,31 +2,25 @@
 
 namespace Webstack\UserBundle\Model;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 abstract class Role
 {
-    /**
-     * @ORM\Column(type="string", unique=true)
-     */
+    #[ORM\Column(unique: true)]
     protected string $role = '';
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     protected ?string $description = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     protected ?string $remark = null;
 
     /**
-     * @var array<string>|null
-     *
-     * @ORM\Column(type="array", nullable=true)
+     * @var list<string>
      */
-    protected ?array $source = null;
+    #[ORM\Column(type: Types::ARRAY)]
+    protected array $source;
 
     public function __construct()
     {
@@ -64,7 +58,7 @@ abstract class Role
     }
 
     /**
-     * @return array<string>|null
+     * @return list<string>|null
      */
     public function getSource(): ?array
     {
@@ -72,9 +66,9 @@ abstract class Role
     }
 
     /**
-     * @param array<string>|null $source
+     * @param list<string> $source
      */
-    public function setSource(?array $source): void
+    public function setSource(array $source): void
     {
         $this->source = $source;
     }

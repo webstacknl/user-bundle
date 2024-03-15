@@ -9,9 +9,6 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class WebstackUserExtension extends Extension
 {
-    /**
-     * @throws \Exception
-     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
@@ -37,9 +34,6 @@ class WebstackUserExtension extends Extension
         }
     }
 
-    /**
-     * @throws \Exception
-     */
     private function loadRegistration(array $config, ContainerBuilder $container, XmlFileLoader $loader, array $fromEmail): void
     {
         $loader->load('registration.xml');
@@ -72,10 +66,12 @@ class WebstackUserExtension extends Extension
                 if (!array_key_exists($ns, $config)) {
                     continue;
                 }
+
                 $namespaceConfig = $config[$ns];
             } else {
                 $namespaceConfig = $config;
             }
+
             if (is_array($map)) {
                 $this->remapParameters($namespaceConfig, $container, $map);
             } else {
